@@ -1,22 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.widget.RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/backgroundmenupicture2"
-
     tools:context="com.example.matos.trackmore.MenuActivity">
 
 
-    <TextView
-        android:id="@+id/TempText"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/SlideView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/dotsLayout"
+        android:layout_alignParentStart="true">
+
+
+    </android.support.v4.view.ViewPager>
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="TrackMore Picture"
-        android:textColor="@color/colorAccent"
-        android:textSize="32sp" />
+        android:orientation="horizontal"
+        android:padding="20dp"
+        android:id="@+id/dotsLayout"></LinearLayout>
 
 </android.widget.RelativeLayout>
