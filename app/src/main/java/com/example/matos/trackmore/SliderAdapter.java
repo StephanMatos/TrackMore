@@ -1,6 +1,7 @@
 package com.example.matos.trackmore;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +36,7 @@ public class SliderAdapter extends PagerAdapter {
             "Track people",
             "Sport"
     };
+
 
     @Override
     public int getCount() {
