@@ -48,10 +48,9 @@ public class HomeActivity extends AppCompatActivity {
                 if (mCurrentPage == 0) {
                     PetActivity();
                 } else if (mCurrentPage == 1) {
-                    //PeopleActivity();
-                    int so = 2;
+                    PeopleActivity();
                 } else {
-                     // SportActivity();
+                     SportActivity();
                 }
 
             }
@@ -65,8 +64,19 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void addDotsIndicator(int position) {
+    public void PeopleActivity() {
+        Intent intent =  new Intent(this, TrackingPeopleActivity.class);
+        startActivity(intent);
+    }
 
+    public void SportActivity() {
+        Intent intent =  new Intent(this, TrackingSportActivity.class);
+        startActivity(intent);
+    }
+
+
+
+    public void addDotsIndicator(int position) {
         mdots = new TextView[3];
         mDotLayout.removeAllViews();
 

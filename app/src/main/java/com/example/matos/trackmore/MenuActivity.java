@@ -13,6 +13,8 @@ public class MenuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+
+        // Make the change from MenuActivity to HomeActivity after 3 sec (SPLASH_TIMEOUT)
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

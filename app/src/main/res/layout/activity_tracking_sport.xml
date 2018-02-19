@@ -4,8 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.matos.trackmore.TrackingPetActivity"
-    tools:showIn="@layout/app_bar_tracking_pet">
+    tools:context="com.example.matos.trackmore.TrackingSportActivity">
 
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sport Activity"
+        android:textSize="32sp"
+        tools:layout_editor_absoluteX="98dp"
+        tools:layout_editor_absoluteY="233dp" />
 </android.support.constraint.ConstraintLayout>
