@@ -1,7 +1,14 @@
 package com.example.matos.trackmore;
 
+
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -9,6 +16,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.Task;
 
 public class TrackingIndividualActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -34,18 +42,38 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        float zoom = 13;
         mMap = googleMap;
-        float zoom = 17;
-
-        // Add a marker in Sydney and move the camera
-        LatLng DTU = new LatLng(55.786079, 12.519635);
-        mMap.addMarker(new MarkerOptions().position(DTU).title("Marker in DK"));
         mMap.moveCamera(CameraUpdateFactory.zoomTo(zoom));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(DTU));
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Android needs to peform this check, otherwise location will not be shown
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+
+
+
+        
+        LatLng DTU = new LatLng(55.786079, 12.519635);
+
+
+
+
+
+
+
+
+
 
     }
+
+
+
+
 
 
 }
