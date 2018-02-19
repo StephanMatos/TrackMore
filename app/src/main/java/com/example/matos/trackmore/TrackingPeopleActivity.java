@@ -10,4 +10,7 @@ public class TrackingPeopleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tracking_people);
     }
+
+
+
 }
