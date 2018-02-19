@@ -37,10 +37,15 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        float zoom = 17;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LatLng DTU = new LatLng(55.786079, 12.519635);
+        mMap.addMarker(new MarkerOptions().position(DTU).title("Marker in DK"));
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(zoom));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(DTU));
+
     }
+
+
 }
