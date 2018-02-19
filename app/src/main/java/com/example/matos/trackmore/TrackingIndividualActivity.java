@@ -1,10 +1,11 @@
 package com.example.matos.trackmore;
 
-
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -16,7 +17,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.Task;
 
 public class TrackingIndividualActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -46,25 +46,25 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        float zoom = 13;
         mMap = googleMap;
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(zoom));
+        float zoom = 16;
+
+        // Add a marker
+        //LatLng DTU = new LatLng(55.786079, 12.519635);
+        //mMap.addMarker(new MarkerOptions().position(DTU).title("Marker in DK"));
+
+        // Android needs to peform this check, otherwise location will not be shown
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Android needs to peform this check, otherwise location will not be shown
             return;
         }
         mMap.setMyLocationEnabled(true);
 
+        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
 
-        
-        LatLng DTU = new LatLng(55.786079, 12.519635);
-
-
-
-
-
-
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
 
 
