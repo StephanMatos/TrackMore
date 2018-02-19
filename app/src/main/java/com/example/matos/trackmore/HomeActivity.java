@@ -46,9 +46,9 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 if (mCurrentPage == 0) {
-                    PetActivity();
+                    IndividualActivity();
                 } else if (mCurrentPage == 1) {
-                    PeopleActivity();
+                    GroupActivity();
                 } else {
                      SportActivity();
                 }
@@ -59,13 +59,13 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-    public void PetActivity() {
-        Intent intent =  new Intent(this, TrackingPetActivity.class);
+    public void IndividualActivity() {
+        Intent intent =  new Intent(this, TrackingIndividualActivity.class);
         startActivity(intent);
     }
 
-    public void PeopleActivity() {
-        Intent intent =  new Intent(this, TrackingPeopleActivity.class);
+    public void GroupActivity() {
+        Intent intent =  new Intent(this, TrackingGroupActivity.class);
         startActivity(intent);
     }
 
