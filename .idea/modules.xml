@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/AndroidProjects.iml" filepath="$PROJECT_DIR$/AndroidProjects.iml" />
+      <module fileurl="file://C:\Users\Matos\OneDrive\TrackMore\AndroidProjects.iml" filepath="C:\Users\Matos\OneDrive\TrackMore\AndroidProjects.iml" />
       <module fileurl="file://$PROJECT_DIR$/TrackMore.iml" filepath="$PROJECT_DIR$/TrackMore.iml" />
       <module fileurl="file://C:\Users\Matos\OneDrive\AndroidProjects\TrackMore.iml" filepath="C:\Users\Matos\OneDrive\AndroidProjects\TrackMore.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />

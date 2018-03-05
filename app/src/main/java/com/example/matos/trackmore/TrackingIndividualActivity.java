@@ -17,12 +17,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-
-
+import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class TrackingIndividualActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -43,6 +40,8 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        new tcp().execute();
 
     }
 
@@ -159,16 +158,21 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
 
 
 
+    public class tcp extends AsyncTask<Void, Void, Void> {
+
+        protected Void doInBackground(Void... params) {
+
+            Network net = Network.getInstance();
+            net.Init();
+            PrintWriter pw = net.getPw();
+            System.out.println("Inside Async");
+
+            pw.println("Hello");
+            pw.flush();
+
+            return null;
+        }
 
 
-
-
-
-
-
-
-
-
-
-
+    }
 }
