@@ -103,8 +103,6 @@ public class HomeActivity extends AppCompatActivity{
         startActivity(intent);
     }
 
-
-
     public void addDotsIndicator(int position) {
         mdots = new TextView[3];
         mDotLayout.removeAllViews();

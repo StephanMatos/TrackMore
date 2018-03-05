@@ -3,19 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/backgroundmenupicture2"
+    android:background="@drawable/backgroundmenupicture5"
 
     tools:context="com.example.matos.trackmore.MenuActivity">
 
 
-    <TextView
-        android:id="@+id/TempText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="TrackMore Picture"
-        android:textColor="@color/colorAccent"
-        android:textSize="32sp" />
+
 
 </android.widget.RelativeLayout>
