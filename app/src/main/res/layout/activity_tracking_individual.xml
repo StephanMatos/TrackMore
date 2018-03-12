@@ -9,10 +9,11 @@
 
 
     <ImageButton
+        android:id="@+id/dropdownButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="left|top"
-        android:layout_marginTop="20dp"
+        android:layout_gravity="left|center"
+        android:layout_marginTop="50dp"
         android:background="@android:color/transparent"
         android:backgroundTint="@android:color/transparent"
         android:padding="10dp"

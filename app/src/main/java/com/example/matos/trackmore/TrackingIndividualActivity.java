@@ -1,5 +1,6 @@
 package com.example.matos.trackmore;
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -10,6 +11,12 @@ import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
+import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -30,8 +37,10 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
     Handler h = new Handler();
     int delay = 10 * 500;
     int count = 1;
+    private ImageButton dropDownButton;
 
 
+    @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +51,27 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         mapFragment.getMapAsync(this);
 
         new tcp().execute();
+
+        dropDownButton = (ImageButton) findViewById(R.id.dropdownButton);
+        dropDownButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu popup = new PopupMenu(TrackingIndividualActivity.this, dropDownButton);
+                // Inflating the popup using xml file
+                popup.getMenuInflater().inflate(R.menu.popup_menu_individual, popup.getMenu());
+
+                //registering popup with OnMenuItemClickListener
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        Toast.makeText(TrackingIndividualActivity.this, "You Clicked : " + menuItem.getTitle(), Toast.LENGTH_SHORT).show();
+                        return true;
+                    }
+                });
+
+                popup.show();
+            }
+        });
 
     }
 
