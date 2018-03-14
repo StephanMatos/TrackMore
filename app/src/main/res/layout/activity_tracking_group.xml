@@ -5,5 +5,19 @@
     android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.matos.trackmore.TrackingGroupActivity"
-    />
+    tools:context="com.example.matos.trackmore.TrackingGroupActivity">
+
+
+    <ImageButton
+        android:id="@+id/dropdownButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|center"
+        android:layout_marginTop="50dp"
+        android:background="@android:color/transparent"
+        android:backgroundTint="@android:color/transparent"
+        android:padding="10dp"
+        android:paddingRight="10dp"
+        android:src="@android:drawable/ic_menu_sort_by_size" />
+
+</fragment>

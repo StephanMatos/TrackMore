@@ -25,7 +25,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.SphericalUtil;
+
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class TrackingIndividualActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -34,9 +37,12 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
 
     private ArrayList<Marker> markerArray1 = new ArrayList<Marker>();
     private ArrayList<Marker> markerArray2 = new ArrayList<Marker>();
+    LatLng CurrentPosition;
+    LatLng MarkerPosition;
     Handler h = new Handler();
     int delay = 10 * 500;
     int count = 1;
+    boolean ShowMarker = false;
     private ImageButton dropDownButton;
 
 
@@ -64,7 +70,19 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        Toast.makeText(TrackingIndividualActivity.this, "You Clicked : " + menuItem.getTitle(), Toast.LENGTH_SHORT).show();
+
+                        if (menuItem.getGroupId() == R.id.ShowDistance){
+
+                            DecimalFormat twodecimalDistance = new DecimalFormat("0.00");
+
+                            double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, MarkerPosition)/1000;
+
+                            Toast.makeText(TrackingIndividualActivity.this, menuItem.getTitle() + " to marker: " + twodecimalDistance.format(distance) + " Km", Toast.LENGTH_LONG).show();
+
+                        }
+
+
+
                         return true;
                     }
                 });
@@ -86,14 +104,6 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
             return;
         }
 
-        // Location of device, zoom to location of device
-        mMap.setMyLocationEnabled(true);
-        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
-
         // Redraws map every delay's time
         h.postDelayed(new Runnable(){
             public void run(){
@@ -101,6 +111,18 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
                 h.postDelayed(this, delay);
             }
         }, delay);
+
+        // Location of device, zoom to location of device
+        mMap.setMyLocationEnabled(true);
+        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+
+        CurrentPosition = latLng;
+
+
+
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
     }
 
@@ -133,6 +155,7 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
     public void recieveGPS(){
         LatLng DTU = new LatLng(55.786080, 12.519635);
         LatLng DTU1 = new LatLng(55.786070, 12.519635);
+        MarkerPosition = DTU;
 
 
         LatLng DTU2 = new LatLng(55.786090, 12.519631);
