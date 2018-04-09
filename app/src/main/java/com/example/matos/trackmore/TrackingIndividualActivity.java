@@ -63,7 +63,7 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-
+        wifi();
         new tcp().execute();
         new readBuffer().execute();
 
@@ -116,7 +116,6 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         // Redraws map every delay's time
         h.postDelayed(new Runnable(){
             public void run(){
-                recieveGPS();
                 h.postDelayed(this, delay);
             }
         }, delay);
@@ -161,52 +160,6 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
 
     }
 
-    public void recieveGPS(){
-        LatLng DTU = new LatLng(55.786080, 12.519635);
-        LatLng DTU1 = new LatLng(55.786070, 12.519635);
-        MarkerPosition = DTU;
-
-
-        LatLng DTU2 = new LatLng(55.786090, 12.519631);
-        LatLng DTU3 = new LatLng(55.786100, 13.519635);
-
-
-        LatLng DTU4 = new LatLng(55.786320, 12.539635);
-        LatLng DTU5 = new LatLng(55.786110, 14.519635);
-
-        LatLng DTU6 = new LatLng(55.786123, 12.512635);
-        LatLng DTU7 = new LatLng(55.786140, 15.519615);
-
-        LatLng DTU8 = new LatLng(55.723160, 12.513635);
-        LatLng DTU9 = new LatLng(55.782180, 16.519445);
-
-
-
-
-        if(count == 1){
-            addMarker(DTU,"1");
-           // addMarker(DTU1,"2");
-        }
-        if(count == 2){
-            addMarker(DTU2,"1");
-           // addMarker(DTU3,"2");
-        }
-        if(count == 3){
-            addMarker(DTU4,"1");
-           // addMarker(DTU5,"2");
-        }
-        if(count == 4){
-            addMarker(DTU6,"1");
-           // addMarker(DTU7,"2");
-        }
-        if(count == 5){
-            addMarker(DTU8,"1");
-           // addMarker(DTU9,"2");
-        }
-
-        count = count + 1;
-    }
-
     public void wifi(){
 
 
@@ -228,6 +181,15 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
     public void readJsonObject(JSONObject json) throws JSONException {
 
         int SYSTEM = (json.getInt("SYSTEM"));
+
+        if(SYSTEM == 1){
+            int id = json.getInt("ID");
+            String sID = Integer.toString(id);
+            double latitude = json.getDouble("LATITUDE");
+            double longitude = json.getDouble("LONGITUDE");
+            MarkerPosition = new LatLng(latitude,longitude);
+            addMarker(MarkerPosition,sID);
+        }
 
         if(SYSTEM == 7){
             System.out.println("json object read");
@@ -275,6 +237,7 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         protected void onPostExecute(String s) {
             if(s == null){
                 new readBuffer().execute();
+
             }else{
                 new makeJsonObject().execute(s);
             }
