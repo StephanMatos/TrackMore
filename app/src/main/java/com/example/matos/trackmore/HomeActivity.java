@@ -122,8 +122,6 @@ public class HomeActivity extends AppCompatActivity{
             mDotLayout.addView(mdots[i]);
         }
 
-
-
         if (mdots.length >   0) {
             mdots[position].setTextColor(getResources().getColor(R.color.White));
         }
@@ -148,8 +146,6 @@ public class HomeActivity extends AppCompatActivity{
 
         }
     };
-
-
 
     public void connectWifi(){
         String ssid = "TrackMore-1";

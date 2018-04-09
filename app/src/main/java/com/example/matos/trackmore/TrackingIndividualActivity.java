@@ -37,8 +37,8 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
 
     private ArrayList<Marker> markerArray1 = new ArrayList<Marker>();
     private ArrayList<Marker> markerArray2 = new ArrayList<Marker>();
-    LatLng CurrentPosition;
-    LatLng MarkerPosition;
+    private LatLng CurrentPosition;
+    private LatLng MarkerPosition;
     Handler h = new Handler();
     int delay = 10 * 500;
     int count = 1;
@@ -81,8 +81,6 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
 
                         }
 
-
-
                         return true;
                     }
                 });
@@ -97,7 +95,6 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         float zoom = 13;
-
 
         // Android needs to peform this check, otherwise location will not be shown
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -120,12 +117,9 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
 
         CurrentPosition = latLng;
 
-
-
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
     }
-
 
     public void addMarker(LatLng location, String id){
 
@@ -149,7 +143,6 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
             lastPosition.remove();
             list.remove(0);
         }
-
     }
 
     public void recieveGPS(){
@@ -208,9 +201,6 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         }
     }
 
-
-
-
     public class tcp extends AsyncTask<Void, Void, Void> {
 
         protected Void doInBackground(Void... params) {
@@ -225,7 +215,5 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
 
             return null;
         }
-
-
     }
 }
