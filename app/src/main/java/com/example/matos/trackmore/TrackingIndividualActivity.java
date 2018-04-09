@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
@@ -27,6 +29,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.SphericalUtil;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -37,8 +44,8 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
 
     private ArrayList<Marker> markerArray1 = new ArrayList<Marker>();
     private ArrayList<Marker> markerArray2 = new ArrayList<Marker>();
-    private LatLng CurrentPosition;
-    private LatLng MarkerPosition;
+    LatLng CurrentPosition;
+    LatLng MarkerPosition;
     Handler h = new Handler();
     int delay = 10 * 500;
     int count = 1;
@@ -56,7 +63,9 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+
         new tcp().execute();
+        new readBuffer().execute();
 
         dropDownButton = (ImageButton) findViewById(R.id.dropdownButton);
         dropDownButton.setOnClickListener(new View.OnClickListener() {
@@ -81,6 +90,8 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
 
                         }
 
+
+
                         return true;
                     }
                 });
@@ -95,6 +106,7 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         float zoom = 13;
+
 
         // Android needs to peform this check, otherwise location will not be shown
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -117,9 +129,12 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
 
         CurrentPosition = latLng;
 
+
+
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
     }
+
 
     public void addMarker(LatLng location, String id){
 
@@ -143,6 +158,7 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
             lastPosition.remove();
             list.remove(0);
         }
+
     }
 
     public void recieveGPS(){
@@ -191,29 +207,107 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         count = count + 1;
     }
 
-    private class makeMark extends AsyncTask<Void, Void, Void> {
+    public void wifi(){
 
 
-        @Override
-        protected Void doInBackground(Void... voids) {
+        String ssid = "TrackMore-1";
+        String key = "password";
 
-            return null;
-        }
+        WifiConfiguration wifiConfig = new WifiConfiguration();
+        wifiConfig.SSID = String.format("\"%s\"", ssid);
+        wifiConfig.preSharedKey = String.format("\"%s\"", key);
+
+        WifiManager wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
+
+        int netId = wifiManager.addNetwork(wifiConfig);
+        wifiManager.disconnect();
+        wifiManager.enableNetwork(netId, true);
+        wifiManager.reconnect();
     }
+
+    public void readJsonObject(JSONObject json) throws JSONException {
+
+        int SYSTEM = (json.getInt("SYSTEM"));
+
+        if(SYSTEM == 7){
+            System.out.println("json object read");
+        }
+
+
+    }
+
 
     public class tcp extends AsyncTask<Void, Void, Void> {
 
         protected Void doInBackground(Void... params) {
-
             Network net = Network.getInstance();
             net.Init();
+
             PrintWriter pw = net.getPw();
             System.out.println("Inside Async");
-
-            pw.println("Hello");
+            pw.println("{\"ID\":0,\"SYSTEM\":9,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
             pw.flush();
-
             return null;
         }
+
+
     }
+
+    public class readBuffer extends AsyncTask<Void, Void,String>{
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            Network net = Network.getInstance();
+            BufferedReader bir = net.getBir();
+            String message = null;
+            try {
+                if(bir.ready()){
+                    message = bir.readLine();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println(message);
+            return message;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if(s == null){
+                new readBuffer().execute();
+            }else{
+                new makeJsonObject().execute(s);
+            }
+
+
+        }
+    }
+
+    public class makeJsonObject extends AsyncTask<String, Void, JSONObject>{
+
+        @Override
+        protected JSONObject doInBackground(String... strings) {
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = new JSONObject(strings[0]);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                System.out.println("json object failed");
+            }
+
+            return  jsonObject;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject jsonObject) {
+
+            try {
+                readJsonObject(jsonObject);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 }
