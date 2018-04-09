@@ -1,6 +1,9 @@
 package com.example.matos.trackmore;
 
 import android.content.Intent;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,4 +27,9 @@ public class MenuActivity extends AppCompatActivity {
             }
         },SPLASH_TIMEOUT);
     }
+
+
+
+
+
 }
