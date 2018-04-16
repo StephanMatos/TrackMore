@@ -16,6 +16,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -23,6 +25,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.SphericalUtil;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -38,6 +42,7 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
 
     Marker[] markers = new Marker[4];
     LatLng CurrentPosition;
+    LatLng markerPosition;
     Handler h = new Handler();
     String ID;
     int foreignID;
@@ -59,8 +64,8 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         mapFragment.getMapAsync(this);
 
 
-        new tcp().execute();
-        new readBuffer().execute();
+        new TrackingIndividualActivity.tcp().execute();
+        new TrackingIndividualActivity.readBuffer().execute();
 
 
         dropDownButton = (ImageButton) findViewById(R.id.dropdownButton);
@@ -76,13 +81,17 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
 
-                        if (menuItem.getGroupId() == R.id.ShowDistance){
+                        if (menuItem.getGroupId() == R.id.ShowDistance && markerPosition != null){
 
                             DecimalFormat twodecimalDistance = new DecimalFormat("0.00");
 
-                           // double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, MarkerPosition)/1000;
+                           double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, markerPosition)/1000;
 
-                           // Toast.makeText(TrackingIndividualActivity.this, menuItem.getTitle() + " to marker: " + twodecimalDistance.format(distance) + " Km", Toast.LENGTH_LONG).show();
+                           Toast.makeText(TrackingIndividualActivity.this, menuItem.getTitle() + " to marker: " + twodecimalDistance.format(distance) + " Km", Toast.LENGTH_LONG).show();
+
+                        } else if (menuItem.getGroupId() == R.id.ShowDistance && markerPosition != null) {
+
+                            System.out.print("Speed");
 
                         }
 
@@ -194,7 +203,7 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         protected LatLng doInBackground(String... strings) {
             JSONObject json = null;
             int id = 0;
-            LatLng markerPosition = null;
+            markerPosition = null;
             try {
                json = new JSONObject(strings[0]);
             } catch (JSONException e) {

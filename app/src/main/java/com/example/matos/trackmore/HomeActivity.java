@@ -7,7 +7,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -48,8 +47,7 @@ public class HomeActivity extends AppCompatActivity{
         mSlideViewPager.setAdapter(sliderAdapter);
 
         addDotsIndicator(0);
-
-
+        connectWifi();
 
         mSlideViewPager.addOnPageChangeListener(dotListner );
 
@@ -124,8 +122,6 @@ public class HomeActivity extends AppCompatActivity{
             mDotLayout.addView(mdots[i]);
         }
 
-
-
         if (mdots.length >   0) {
             mdots[position].setTextColor(getResources().getColor(R.color.White));
         }
@@ -151,10 +147,20 @@ public class HomeActivity extends AppCompatActivity{
         }
     };
 
+    public void connectWifi(){
+        String ssid = "TrackMore-1";
+        String key = "password";
 
+        WifiConfiguration wifiConfig = new WifiConfiguration();
+        wifiConfig.SSID = String.format("\"%s\"", ssid);
+        wifiConfig.preSharedKey = String.format("\"%s\"", key);
 
+        WifiManager wifiManager = (WifiManager)getSystemService(WIFI_SERVICE);
 
-
-
+        int netId = wifiManager.addNetwork(wifiConfig);
+        wifiManager.disconnect();
+        wifiManager.enableNetwork(netId, true);
+        wifiManager.reconnect();
+    }
 }
 
