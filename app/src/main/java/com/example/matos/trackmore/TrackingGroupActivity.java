@@ -164,6 +164,8 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
             System.out.println("Inside Async");
             pw.println("{\"ID\":0,\"SYSTEM\":9,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
             pw.flush();
+            pw.println("{\"ID\":0,\"SYSTEM\":2,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
+            pw.flush();
             return null;
         }
     }

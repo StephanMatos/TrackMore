@@ -64,9 +64,7 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         mapFragment.getMapAsync(this);
 
 
-        new TrackingIndividualActivity.tcp().execute();
-        new TrackingIndividualActivity.readBuffer().execute();
-
+        new tcp().execute();
 
         dropDownButton = (ImageButton) findViewById(R.id.dropdownButton);
         dropDownButton.setOnClickListener(new View.OnClickListener() {
@@ -162,6 +160,7 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
             System.out.println("Inside Async");
             pw.println("{\"ID\":0,\"SYSTEM\":9,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
             pw.flush();
+            pw.println("{\"ID\":0,\"SYSTEM\":1,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
            return null;
         }
     }
