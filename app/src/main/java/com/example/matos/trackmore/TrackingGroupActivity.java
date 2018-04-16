@@ -35,10 +35,6 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
         mMap = googleMap;
         float zoom = 16;
 
-        // Add a marker
-        //LatLng DTU = new LatLng(55.786079, 12.519635);
-        //mMap.addMarker(new MarkerOptions().position(DTU).title("Marker in DK"));
-
         // Android needs to peform this check, otherwise location will not be shown
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;

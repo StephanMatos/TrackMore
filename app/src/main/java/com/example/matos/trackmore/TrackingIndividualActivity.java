@@ -3,7 +3,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.wifi.WifiConfiguration;
@@ -17,8 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
-import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -26,9 +23,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.SphericalUtil;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -42,15 +36,16 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
 
     GoogleMap mMap;
 
-    private ArrayList<Marker> markerArray1 = new ArrayList<Marker>();
-    private ArrayList<Marker> markerArray2 = new ArrayList<Marker>();
+    Marker[] markers = new Marker[4];
     LatLng CurrentPosition;
-    LatLng MarkerPosition;
     Handler h = new Handler();
+    String ID;
+    int foreignID;
     int delay = 10 * 500;
-    int count = 1;
-    boolean ShowMarker = false;
+    int SYSTEM = 0;
     private ImageButton dropDownButton;
+    Network network;
+    BufferedReader bir;
 
 
     @SuppressLint("WrongViewCast")
@@ -63,9 +58,10 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        wifi();
+
         new tcp().execute();
         new readBuffer().execute();
+
 
         dropDownButton = (ImageButton) findViewById(R.id.dropdownButton);
         dropDownButton.setOnClickListener(new View.OnClickListener() {
@@ -84,13 +80,11 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
 
                             DecimalFormat twodecimalDistance = new DecimalFormat("0.00");
 
-                            double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, MarkerPosition)/1000;
+                           // double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, MarkerPosition)/1000;
 
-                            Toast.makeText(TrackingIndividualActivity.this, menuItem.getTitle() + " to marker: " + twodecimalDistance.format(distance) + " Km", Toast.LENGTH_LONG).show();
+                           // Toast.makeText(TrackingIndividualActivity.this, menuItem.getTitle() + " to marker: " + twodecimalDistance.format(distance) + " Km", Toast.LENGTH_LONG).show();
 
                         }
-
-
 
                         return true;
                     }
@@ -107,7 +101,6 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         mMap = googleMap;
         float zoom = 13;
 
-
         // Android needs to peform this check, otherwise location will not be shown
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -117,6 +110,7 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         h.postDelayed(new Runnable(){
             public void run(){
                 h.postDelayed(this, delay);
+
             }
         }, delay);
 
@@ -125,38 +119,8 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-
         CurrentPosition = latLng;
-
-
-
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
-
-    }
-
-
-    public void addMarker(LatLng location, String id){
-
-        if(id == "1") {
-            MakeMarker(location,id, markerArray1,Color.RED);
-        }
-
-        if(id == "2") {
-            MakeMarker(location,id, markerArray2,Color.BLUE);
-        }
-    }
-
-    public void MakeMarker(LatLng location,String id,ArrayList<Marker> list, int color){
-
-        Marker newMarker = mMap.addMarker(new MarkerOptions().position(location).title(id));
-        list.add(newMarker);
-
-        if(list.size() > 1){
-            Marker lastPosition = list.get(0);
-            mMap.addPolyline(new PolylineOptions().add(newMarker.getPosition(), lastPosition.getPosition()).width(5).color(color));
-            lastPosition.remove();
-            list.remove(0);
-        }
 
     }
 
@@ -178,54 +142,29 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         wifiManager.reconnect();
     }
 
-    public void readJsonObject(JSONObject json) throws JSONException {
 
-        int SYSTEM = (json.getInt("SYSTEM"));
+    public class tcp extends AsyncTask<Void, Void, Boolean>{
 
-        if(SYSTEM == 1){
-            int id = json.getInt("ID");
-            String sID = Integer.toString(id);
-            double latitude = json.getDouble("LATITUDE");
-            double longitude = json.getDouble("LONGITUDE");
-            MarkerPosition = new LatLng(latitude,longitude);
-            addMarker(MarkerPosition,sID);
-        }
+        protected Boolean doInBackground(Void... params) {
+            network = Network.getInstance();
+            network.Init();
 
-        if(SYSTEM == 7){
-            System.out.println("json object read");
-        }
-
-
-    }
-
-
-    public class tcp extends AsyncTask<Void, Void, Void> {
-
-        protected Void doInBackground(Void... params) {
-            Network net = Network.getInstance();
-            net.Init();
-
-            PrintWriter pw = net.getPw();
+            PrintWriter pw = network.getPw();
             System.out.println("Inside Async");
             pw.println("{\"ID\":0,\"SYSTEM\":9,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
             pw.flush();
-            return null;
+           return null;
         }
-
-
     }
 
     public class readBuffer extends AsyncTask<Void, Void,String>{
 
         @Override
         protected String doInBackground(Void... voids) {
-            Network net = Network.getInstance();
-            BufferedReader bir = net.getBir();
+            bir = network.getBir();
             String message = null;
             try {
-                if(bir.ready()){
-                    message = bir.readLine();
-                }
+                message = bir.readLine();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -236,41 +175,77 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         @Override
         protected void onPostExecute(String s) {
             if(s == null){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 new readBuffer().execute();
 
             }else{
                 new makeJsonObject().execute(s);
             }
-
-
         }
     }
 
-    public class makeJsonObject extends AsyncTask<String, Void, JSONObject>{
+    public class makeJsonObject extends AsyncTask<String, Void, LatLng>{
 
         @Override
-        protected JSONObject doInBackground(String... strings) {
-            JSONObject jsonObject = null;
+        protected LatLng doInBackground(String... strings) {
+            JSONObject json = null;
+            int id = 0;
+            LatLng markerPosition = null;
             try {
-                jsonObject = new JSONObject(strings[0]);
+               json = new JSONObject(strings[0]);
             } catch (JSONException e) {
                 e.printStackTrace();
                 System.out.println("json object failed");
             }
 
-            return  jsonObject;
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject jsonObject) {
-
             try {
-                readJsonObject(jsonObject);
+                SYSTEM = (json.getInt("SYSTEM"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
+            if(SYSTEM == 1){
+
+                try {
+                    foreignID = json.getInt("ID");
+                    ID = Integer.toString(foreignID);
+                    String lat = json.getString("LATITUDE");
+                    double latitude = Double.parseDouble(lat);
+                    String lon = json.getString("LONGITUDE");
+                    double longitude = Double.parseDouble(lon);
+                    markerPosition = new LatLng(latitude,longitude);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            if(SYSTEM == 7){
+                System.out.println("json object read");
+            }
+            return markerPosition;
+        }
+
+        @Override
+        protected void onPostExecute(LatLng markerPosistion) {
+            if(markerPosistion != null){
+                makeMarker(markerPosistion);
+            } else {
+                new readBuffer().execute();
+            }
+
+            System.out.println("OnPostExecute in MakeJsonObject");
         }
     }
 
+    public void makeMarker(LatLng position){
+
+            Marker newMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID));
+            new readBuffer().execute();
+    }
 
 }
