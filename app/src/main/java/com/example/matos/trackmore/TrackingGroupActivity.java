@@ -66,8 +66,8 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
         mapFragment.getMapAsync(this);
 
 
-        new TrackingGroupActivity.tcp().execute();
-        new TrackingGroupActivity.readBuffer().execute();
+        new tcp().execute();
+        new readBuffer().execute();
 
 
         dropDownButton = (ImageButton) findViewById(R.id.dropdownButton);
@@ -154,20 +154,31 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
     }
 
 
-    public class tcp extends AsyncTask<Void, Void, Boolean> {
+    public class tcp extends AsyncTask<Void, Void, Void> {
 
-        protected Boolean doInBackground(Void... params) {
+        protected Void doInBackground(Void... params) {
             network = Network.getInstance();
-            network.Init();
+            while(!network.Init()){
+                System.out.println("inside loop tcp");
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
             PrintWriter pw = network.getPw();
-            System.out.println("Inside Async");
-            pw.println("{\"ID\":0,\"SYSTEM\":9,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
-            pw.flush();
-            pw.println("{\"ID\":0,\"SYSTEM\":2,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
-            pw.flush();
+            System.out.println(pw);
+            if(pw != null){
+                pw.println("{\"ID\":0,\"SYSTEM\":9,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
+                pw.flush();
+                pw.println("{\"ID\":0,\"SYSTEM\":2,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
+                pw.flush();
+            }
+
             return null;
         }
+
     }
 
     public class readBuffer extends AsyncTask<Void, Void,String>{

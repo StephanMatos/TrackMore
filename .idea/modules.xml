@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/TrackMore.iml" filepath="$PROJECT_DIR$/TrackMore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/TrackMore.iml" filepath="$PROJECT_DIR$/.idea/TrackMore.iml" />
+      <module fileurl="file://C:\Users\Matos\Desktop\BachelorStudio\TrackMore\TrackMore.iml" filepath="C:\Users\Matos\Desktop\BachelorStudio\TrackMore\TrackMore.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://C:\Users\Matos\Desktop\BachelorStudio\TrackMore\app\app.iml" filepath="C:\Users\Matos\Desktop\BachelorStudio\TrackMore\app\app.iml" />
     </modules>
   </component>
 </project>

@@ -1,13 +1,10 @@
 package com.example.matos.trackmore;
 
 import android.app.Application;
-import android.os.AsyncTask;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.Inet4Address;
 import java.net.Socket;
 
 
@@ -17,12 +14,11 @@ public class Network extends Application {
     private static Socket sock;
     private static BufferedReader bir;
     private static PrintWriter pw;
+    private boolean succes = true;
 
     public Network(){
 
-        Socket sock;
-        BufferedReader bir;
-        PrintWriter pw;
+        sock = new Socket();
     }
 
     public static Network getInstance() {
@@ -32,16 +28,21 @@ public class Network extends Application {
         return(instance);
     }
 
-    public void Init (){
+    public boolean Init (){
+
+        String ip = "192.168.1.2";
         try {
-            sock = new Socket("192.168.1.2", 8888);
-            System.out.println(sock);
+            sock = new Socket(ip, 8888);
             bir = new BufferedReader(new InputStreamReader(sock.getInputStream()));
             pw = new PrintWriter(sock.getOutputStream());
         }catch (IOException e){
             e.printStackTrace();
             System.out.println("init failed");
+            succes = false;
+            return succes;
         }
+
+        return succes;
     }
 
     public Socket getSock(){
