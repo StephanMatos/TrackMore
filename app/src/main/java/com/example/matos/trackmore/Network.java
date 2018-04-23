@@ -41,7 +41,7 @@ public class Network extends Application {
             succes = false;
             return succes;
         }
-
+        succes = true;
         return succes;
     }
 

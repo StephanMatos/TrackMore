@@ -158,10 +158,11 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
 
         protected Void doInBackground(Void... params) {
             network = Network.getInstance();
+
             while(!network.Init()){
                 System.out.println("inside loop tcp");
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(10000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
