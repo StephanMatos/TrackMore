@@ -57,6 +57,7 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
     int delay = 10 * 500;
     int SYSTEM = 0;
     private ImageButton dropDownButton;
+    private boolean action = false;
     Network network;
     BufferedReader bir;
 
@@ -77,7 +78,7 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
         new readBuffer().execute();
 
 
-        dropDownButton = (ImageButton) findViewById(R.id.dropdownButton);
+        //dropDownButton = (ImageButton) findViewById(R.id.dropdownButton);
         dropDownButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -127,8 +128,10 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
         // Redraws map every delay's time
         h.postDelayed(new Runnable(){
             public void run(){
-                h.postDelayed(this, delay);
-
+                if(action){
+                    h.postDelayed(this, delay);
+                    action = false;
+                }
             }
         }, delay);
 
@@ -220,6 +223,8 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
                 SYSTEM = (json.getInt("SYSTEM"));
             } catch (JSONException e) {
                 e.printStackTrace();
+            } catch (NullPointerException e1){
+                e1.printStackTrace();
             }
 
             if(SYSTEM == 1){
@@ -258,14 +263,14 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
 
     public void makeMarker(LatLng position){
 
-        if(ID == "1"){
+        if(ID.equals("1")){
             Marker redMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
             if(red.size() > 0){
                 red.get(0).remove();
                 red.clear();
             }
             red.add(redMarker);
-        } else if(ID == "2"){
+        } else if(ID.equals("2")){
 
             Marker yellowMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
             if(yellow.size() > 0){
@@ -274,7 +279,7 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
             }
             yellow.clear();
             yellow.add(yellowMarker);
-        }else if(ID == "3"){
+        }else if(ID.equals("3")){
             if(green.size() > 0){
                 green.get(0).remove();
                 green.clear();
@@ -282,7 +287,7 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
             Marker greenMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
             green.clear();
             green.add(greenMarker);
-        }else if(ID == "4"){
+        }else if(ID.equals("4")){
             if(blue.size() > 0){
                 blue.get(0).remove();
                 blue.clear();
@@ -291,7 +296,7 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
             blue.clear();
             blue.add(blueMarker);
         }
-
+        action = true;
         new readBuffer().execute();
     }
 
