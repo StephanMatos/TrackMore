@@ -1,12 +1,19 @@
 package com.example.matos.trackmore;
 
 import android.Manifest;
+import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.*;
 import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -20,6 +27,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.IOException;
 
 public class HomeActivity extends AppCompatActivity{
 
@@ -29,7 +39,8 @@ public class HomeActivity extends AppCompatActivity{
     private Button mNextActivityBtn;
     private int mCurrentPage;
     private TextView[] mdots;
-
+    private ProgressDialog progress;
+    private boolean isConnected = false;
 
 
     @Override
@@ -47,16 +58,21 @@ public class HomeActivity extends AppCompatActivity{
         mSlideViewPager.setAdapter(sliderAdapter);
 
         addDotsIndicator(0);
-        connectWifi();
 
         mSlideViewPager.addOnPageChangeListener(dotListner );
+
+        new connectWifi().execute();
 
         mNextActivityBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 if (mCurrentPage == 0) {
-                    IndividualActivity();
+                    try {
+                        IndividualActivity();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 } else if (mCurrentPage == 1) {
                     GroupActivity();
                 } else {
@@ -93,7 +109,10 @@ public class HomeActivity extends AppCompatActivity{
 
     }
 
-    public void IndividualActivity() {
+
+
+
+    public void IndividualActivity() throws InterruptedException {
         Intent intent =  new Intent(this, TrackingIndividualActivity.class);
         startActivity(intent);
     }
@@ -147,20 +166,63 @@ public class HomeActivity extends AppCompatActivity{
         }
     };
 
-    public void connectWifi(){
-        String ssid = "TrackMore-1";
-        String key = "password";
+    private void onScreenMessage(String message){
 
-        WifiConfiguration wifiConfig = new WifiConfiguration();
-        wifiConfig.SSID = String.format("\"%s\"", ssid);
-        wifiConfig.preSharedKey = String.format("\"%s\"", key);
+        Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
 
-        WifiManager wifiManager = (WifiManager)getSystemService(WIFI_SERVICE);
+    }
 
-        int netId = wifiManager.addNetwork(wifiConfig);
-        wifiManager.disconnect();
-        wifiManager.enableNetwork(netId, true);
-        wifiManager.reconnect();
+    private class connectWifi extends AsyncTask<Void,Void,Void>{
+
+        @Override
+        protected void onPreExecute() {
+            System.out.println("ConnectWifi on pre execute");
+
+        }
+        @Override
+        protected Void doInBackground(Void... voids) {
+            String ssid = "TrackMore-1";
+            String key = "password";
+            String ssid1 = "Network connection failed";
+            WifiConfiguration wifiConfig = new WifiConfiguration();
+            wifiConfig.SSID = String.format("\"%s\"", ssid);
+            wifiConfig.preSharedKey = String.format("\"%s\"", key);
+
+            WifiManager wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
+            int netId = wifiManager.addNetwork(wifiConfig);
+            wifiManager.disconnect();
+            wifiManager.enableNetwork(netId, true);
+            wifiManager.reconnect();
+
+
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            if (WifiInfo.getDetailedStateOf(wifiInfo.getSupplicantState()) == NetworkInfo.DetailedState.CONNECTED) {
+                ssid1 = wifiInfo.getSSID();
+            }
+            if(ssid.equals(ssid1)){
+                isConnected = true;
+            }
+
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void result) {
+
+            if (!isConnected) {
+                onScreenMessage("Connection Failed. Try again.");
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                new connectWifi().execute();
+
+            } else {
+                onScreenMessage("Connected.");
+                isConnected = true;
+            }
+
+        }
     }
 }
 

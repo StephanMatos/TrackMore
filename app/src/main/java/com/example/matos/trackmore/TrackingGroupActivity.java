@@ -23,6 +23,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -42,7 +44,11 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
 
     GoogleMap mMap;
 
-    Marker[] markers = new Marker[4];
+    ArrayList<Marker> red = new ArrayList<>();
+    ArrayList<Marker> yellow = new ArrayList<>();
+    ArrayList<Marker> green = new ArrayList<>();
+    ArrayList<Marker> blue = new ArrayList<>();
+
     LatLng CurrentPosition;
     LatLng markerPosition;
     Handler h = new Handler();
@@ -53,6 +59,7 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
     private ImageButton dropDownButton;
     Network network;
     BufferedReader bir;
+
 
 
     @SuppressLint("WrongViewCast")
@@ -135,23 +142,6 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
 
     }
 
-    public void wifi(){
-
-
-        String ssid = "TrackMore-1";
-        String key = "password";
-
-        WifiConfiguration wifiConfig = new WifiConfiguration();
-        wifiConfig.SSID = String.format("\"%s\"", ssid);
-        wifiConfig.preSharedKey = String.format("\"%s\"", key);
-
-        WifiManager wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
-
-        int netId = wifiManager.addNetwork(wifiConfig);
-        wifiManager.disconnect();
-        wifiManager.enableNetwork(netId, true);
-        wifiManager.reconnect();
-    }
 
 
     public class tcp extends AsyncTask<Void, Void, Void> {
@@ -218,7 +208,6 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
         @Override
         protected LatLng doInBackground(String... strings) {
             JSONObject json = null;
-            int id = 0;
             markerPosition = null;
             try {
                 json = new JSONObject(strings[0]);
@@ -260,7 +249,7 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
             if(markerPosistion != null){
                 makeMarker(markerPosistion);
             } else {
-                new TrackingGroupActivity.readBuffer().execute();
+                new readBuffer().execute();
             }
 
             System.out.println("OnPostExecute in MakeJsonObject");
@@ -269,8 +258,41 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
 
     public void makeMarker(LatLng position){
 
-        Marker newMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID));
-        new TrackingGroupActivity.readBuffer().execute();
+        if(ID == "1"){
+            Marker redMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            if(red.size() > 0){
+                red.get(0).remove();
+                red.clear();
+            }
+            red.add(redMarker);
+        } else if(ID == "2"){
+
+            Marker yellowMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+            if(yellow.size() > 0){
+                yellow.get(0).remove();
+                yellow.clear();
+            }
+            yellow.clear();
+            yellow.add(yellowMarker);
+        }else if(ID == "3"){
+            if(green.size() > 0){
+                green.get(0).remove();
+                green.clear();
+            }
+            Marker greenMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+            green.clear();
+            green.add(greenMarker);
+        }else if(ID == "4"){
+            if(blue.size() > 0){
+                blue.get(0).remove();
+                blue.clear();
+            }
+            Marker blueMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+            blue.clear();
+            blue.add(blueMarker);
+        }
+
+        new readBuffer().execute();
     }
 
 }
