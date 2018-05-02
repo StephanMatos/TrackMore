@@ -78,7 +78,7 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
         new readBuffer().execute();
 
 
-        //dropDownButton = (ImageButton) findViewById(R.id.dropdownButton);
+        dropDownButton = (ImageButton) findViewById(R.id.dropdownButton);
         dropDownButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -227,7 +227,7 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
                 e1.printStackTrace();
             }
 
-            if(SYSTEM == 1){
+            if(SYSTEM == 2){
 
                 try {
                     foreignID = json.getInt("ID");

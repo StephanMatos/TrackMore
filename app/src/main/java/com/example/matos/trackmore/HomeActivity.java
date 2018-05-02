@@ -61,7 +61,7 @@ public class HomeActivity extends AppCompatActivity{
 
         mSlideViewPager.addOnPageChangeListener(dotListner );
 
-        new connectWifi().execute();
+        //new connectWifi().execute();
 
         mNextActivityBtn.setOnClickListener(new View.OnClickListener() {
             @Override
