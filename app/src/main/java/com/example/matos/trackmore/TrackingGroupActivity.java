@@ -42,24 +42,25 @@ import java.util.ArrayList;
 
 public class TrackingGroupActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    GoogleMap mMap;
+    private static GoogleMap mMap;
 
-    ArrayList<Marker> red = new ArrayList<>();
-    ArrayList<Marker> yellow = new ArrayList<>();
-    ArrayList<Marker> green = new ArrayList<>();
-    ArrayList<Marker> blue = new ArrayList<>();
+    private static ArrayList<Marker> red = new ArrayList<>();
+    private static ArrayList<Marker> yellow = new ArrayList<>();
+    private static ArrayList<Marker> green = new ArrayList<>();
+    private static ArrayList<Marker> blue = new ArrayList<>();
+    private static ArrayList<String> macID = new ArrayList<>();
 
-    LatLng CurrentPosition;
-    LatLng markerPosition;
+    private static LatLng CurrentPosition;
+    private static LatLng markerPosition;
     Handler h = new Handler();
-    String ID;
-    int foreignID;
+    private static String ID;
+    private static int internalID;
     int delay = 10 * 500;
-    int SYSTEM = 0;
+    private static int SYSTEM = 0;
     private ImageButton dropDownButton;
-    private boolean action = false;
-    Network network;
-    BufferedReader bir;
+    private static boolean action = false;
+    static Network network = Network.getInstance();
+    private static BufferedReader bir;
 
 
 
@@ -147,10 +148,9 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
 
 
 
-    public class tcp extends AsyncTask<Void, Void, Void> {
+    public static class tcp extends AsyncTask<Void, Void, Void> {
 
         protected Void doInBackground(Void... params) {
-            network = Network.getInstance();
 
             while(!network.Init()){
                 System.out.println("inside loop tcp");
@@ -165,7 +165,6 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
             System.out.println(pw);
             if(pw != null){
                 pw.println("{\"ID\":0,\"SYSTEM\":9,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
-                pw.flush();
                 pw.println("{\"ID\":0,\"SYSTEM\":2,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
                 pw.flush();
             }
@@ -175,7 +174,7 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
 
     }
 
-    public class readBuffer extends AsyncTask<Void, Void,String>{
+    public static class readBuffer extends AsyncTask<Void, Void,String>{
 
         @Override
         protected String doInBackground(Void... voids) {
@@ -194,19 +193,19 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
         protected void onPostExecute(String s) {
             if(s == null){
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                new TrackingGroupActivity.readBuffer().execute();
+                new readBuffer().execute();
 
             }else{
-                new TrackingGroupActivity.makeJsonObject().execute(s);
+                new makeJsonObject().execute(s);
             }
         }
     }
 
-    public class makeJsonObject extends AsyncTask<String, Void, LatLng>{
+    public static class makeJsonObject extends AsyncTask<String, Void, LatLng>{
 
         @Override
         protected LatLng doInBackground(String... strings) {
@@ -230,8 +229,7 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
             if(SYSTEM == 2){
 
                 try {
-                    foreignID = json.getInt("ID");
-                    ID = Integer.toString(foreignID);
+                    ID = json.getString("ID");
                     String lat = json.getString("LATITUDE");
                     double latitude = Double.parseDouble(lat);
                     String lon = json.getString("LONGITUDE");
@@ -261,16 +259,18 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
         }
     }
 
-    public void makeMarker(LatLng position){
+    private static void makeMarker(LatLng position){
 
-        if(ID.equals("1")){
+        internalID = translateID(ID);
+
+        if(internalID == 1){
             Marker redMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
             if(red.size() > 0){
                 red.get(0).remove();
                 red.clear();
             }
             red.add(redMarker);
-        } else if(ID.equals("2")){
+        } else if(internalID == 2){
 
             Marker yellowMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
             if(yellow.size() > 0){
@@ -279,7 +279,7 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
             }
             yellow.clear();
             yellow.add(yellowMarker);
-        }else if(ID.equals("3")){
+        }else if(internalID == 3){
             if(green.size() > 0){
                 green.get(0).remove();
                 green.clear();
@@ -287,7 +287,7 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
             Marker greenMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
             green.clear();
             green.add(greenMarker);
-        }else if(ID.equals("4")){
+        }else if(internalID == 4){
             if(blue.size() > 0){
                 blue.get(0).remove();
                 blue.clear();
@@ -298,6 +298,17 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
         }
         action = true;
         new readBuffer().execute();
+    }
+
+    private static int translateID(String foreignID){
+
+        if(!macID.contains(foreignID)){
+            macID.add(foreignID);
+            internalID = macID.indexOf(foreignID)+1;
+        }else{
+            internalID = macID.indexOf(foreignID)+1;
+        }
+        return internalID;
     }
 
 }

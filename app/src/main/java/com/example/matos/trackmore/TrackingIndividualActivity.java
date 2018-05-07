@@ -49,8 +49,8 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
     int delay = 10 * 500;
     int SYSTEM = 0;
     private ImageButton dropDownButton;
-    Network network;
-    BufferedReader bir;
+    static Network network = Network.getInstance();
+    private static  boolean action;
 
 
     @SuppressLint("WrongViewCast")
@@ -116,7 +116,10 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         // Redraws map every delay's time
         h.postDelayed(new Runnable(){
             public void run(){
-                h.postDelayed(this, delay);
+                if(action){
+                    h.postDelayed(this, delay);
+                }
+                action = false;
 
             }
         }, delay);
@@ -131,129 +134,28 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
 
     }
 
-    public void wifi(){
+    public static class tcp extends AsyncTask<Void, Void, Void> {
 
+        protected Void doInBackground(Void... params) {
 
-        String ssid = "TrackMore-1";
-        String key = "password";
-
-        WifiConfiguration wifiConfig = new WifiConfiguration();
-        wifiConfig.SSID = String.format("\"%s\"", ssid);
-        wifiConfig.preSharedKey = String.format("\"%s\"", key);
-
-        WifiManager wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
-
-        int netId = wifiManager.addNetwork(wifiConfig);
-        wifiManager.disconnect();
-        wifiManager.enableNetwork(netId, true);
-        wifiManager.reconnect();
-    }
-
-
-    public class tcp extends AsyncTask<Void, Void, Boolean>{
-
-        protected Boolean doInBackground(Void... params) {
-            network = Network.getInstance();
-            network.Init();
-
-            PrintWriter pw = network.getPw();
-            System.out.println("Inside Async");
-            pw.println("{\"ID\":0,\"SYSTEM\":9,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
-            pw.flush();
-            pw.println("{\"ID\":0,\"SYSTEM\":1,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
-           return null;
-        }
-    }
-
-    public class readBuffer extends AsyncTask<Void, Void,String>{
-
-        @Override
-        protected String doInBackground(Void... voids) {
-            bir = network.getBir();
-            String message = null;
-            try {
-                message = bir.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            System.out.println(message);
-            return message;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            if(s == null){
+            while(!network.Init()){
+                System.out.println("inside loop tcp");
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(10000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                new readBuffer().execute();
-
-            }else{
-                new makeJsonObject().execute(s);
             }
+
+            PrintWriter pw = network.getPw();
+            System.out.println(pw);
+            if(pw != null){
+                pw.println("{\"ID\":0,\"SYSTEM\":9,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
+                pw.println("{\"ID\":0,\"SYSTEM\":1,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
+                pw.flush();
+            }
+            return null;
         }
-    }
-
-    public class makeJsonObject extends AsyncTask<String, Void, LatLng>{
-
-        @Override
-        protected LatLng doInBackground(String... strings) {
-            JSONObject json = null;
-            int id = 0;
-            markerPosition = null;
-            try {
-               json = new JSONObject(strings[0]);
-            } catch (JSONException e) {
-                e.printStackTrace();
-                System.out.println("json object failed");
-            }
-
-            try {
-                SYSTEM = (json.getInt("SYSTEM"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            if(SYSTEM == 1){
-
-                try {
-                    foreignID = json.getInt("ID");
-                    ID = Integer.toString(foreignID);
-                    String lat = json.getString("LATITUDE");
-                    double latitude = Double.parseDouble(lat);
-                    String lon = json.getString("LONGITUDE");
-                    double longitude = Double.parseDouble(lon);
-                    markerPosition = new LatLng(latitude,longitude);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-            if(SYSTEM == 7){
-                System.out.println("json object read");
-            }
-            return markerPosition;
-        }
-
-        @Override
-        protected void onPostExecute(LatLng markerPosistion) {
-            if(markerPosistion != null){
-                makeMarker(markerPosistion);
-            } else {
-                new readBuffer().execute();
-            }
-
-            System.out.println("OnPostExecute in MakeJsonObject");
-        }
-    }
-
-    public void makeMarker(LatLng position){
-
-            Marker newMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID));
-            new readBuffer().execute();
     }
 
 }
