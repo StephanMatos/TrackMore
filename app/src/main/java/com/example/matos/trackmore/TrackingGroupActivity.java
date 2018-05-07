@@ -49,7 +49,7 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
     private static ArrayList<Marker> green = new ArrayList<>();
     private static ArrayList<Marker> blue = new ArrayList<>();
     private static ArrayList<String> macID = new ArrayList<>();
-
+    private static int i = 1;
     private static LatLng CurrentPosition;
     private static LatLng markerPosition;
     Handler h = new Handler();
