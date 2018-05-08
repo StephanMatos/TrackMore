@@ -13,10 +13,10 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class TrackingSportActivity extends AppCompatActivity {
 
-    private static ImageButton topleftcorner;
-    private static ImageButton lowleftcorner;
-    private static ImageButton toprightcorner;
-    private static ImageButton lowrightcorner;
+    private  ImageButton topleftcorner;
+    private  ImageButton lowleftcorner;
+    private  ImageButton toprightcorner;
+    private  ImageButton lowrightcorner;
     private static LatLng firstcorner;
     private static LatLng secondcorner;
 
@@ -26,10 +26,10 @@ public class TrackingSportActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tracking_sport);
 
 
-        topleftcorner = (ImageButton) findViewById(R.id.topleftcorner);
-        lowleftcorner = (ImageButton) findViewById(R.id.lowleftcorner);
-        toprightcorner = (ImageButton) findViewById(R.id.toprightcorner);
-        lowrightcorner = (ImageButton) findViewById(R.id.lowrightcorner);
+        topleftcorner = findViewById(R.id.topleftcorner);
+        lowleftcorner = findViewById(R.id.lowleftcorner);
+        toprightcorner = findViewById(R.id.toprightcorner);
+        lowrightcorner = findViewById(R.id.lowrightcorner);
 
         topleftcorner.setOnClickListener(new View.OnClickListener() {
             @Override
