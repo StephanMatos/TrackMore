@@ -66,7 +66,7 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
 
         new tcp().execute();
 
-        dropDownButton = (ImageButton) findViewById(R.id.dropdownButton);
+        dropDownButton = findViewById(R.id.dropdownButton);
         dropDownButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -79,14 +79,19 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
 
-                        if (menuItem.getGroupId() == R.id.ShowDistance && markerPosition != null){
+                        if (menuItem.getGroupId() == R.id.ShowDistance && markerPosition != null  ){
 
-                            DecimalFormat twodecimalDistance = new DecimalFormat("0.00");
+                            double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, markerPosition);
 
-                           double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, markerPosition)/1000;
+                            if (distance < 10.00 && distance > 1.00) {
+                                DecimalFormat twodecimalDistance = new DecimalFormat("0.00");
+                                distance /= 1000;
+                                Toast.makeText(TrackingIndividualActivity.this, menuItem.getTitle() + " to marker: " + twodecimalDistance.format(distance) + " km", Toast.LENGTH_LONG).show();
 
-                           Toast.makeText(TrackingIndividualActivity.this, menuItem.getTitle() + " to marker: " + twodecimalDistance.format(distance) + " Km", Toast.LENGTH_LONG).show();
-
+                            } else if (distance < 1.00){
+                                DecimalFormat onedecimalDistance = new DecimalFormat("0.0");
+                                Toast.makeText(TrackingIndividualActivity.this, menuItem.getTitle() + " to marker: " + onedecimalDistance.format(distance) + " m", Toast.LENGTH_LONG).show();
+                            }
                         } else if (menuItem.getGroupId() == R.id.ShowDistance && markerPosition != null) {
 
                             System.out.print("Speed");

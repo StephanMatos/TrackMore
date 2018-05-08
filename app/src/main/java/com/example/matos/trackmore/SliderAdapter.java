@@ -32,11 +32,10 @@ public class SliderAdapter extends PagerAdapter {
 
     public String[] slide_headings = {
 
-            "For one device",
-            "For multiple devices",
-            "For sport"
+            "One device",
+            "Multiple devices",
+            "Sport"
     };
-
 
     @Override
     public int getCount() {

@@ -43,15 +43,13 @@ import java.util.ArrayList;
 public class TrackingGroupActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private static GoogleMap mMap;
-
     private static ArrayList<Marker> red = new ArrayList<>();
     private static ArrayList<Marker> yellow = new ArrayList<>();
     private static ArrayList<Marker> green = new ArrayList<>();
     private static ArrayList<Marker> blue = new ArrayList<>();
     private static ArrayList<String> macID = new ArrayList<>();
     private static int i = 1;
-    private static LatLng CurrentPosition;
-    private static LatLng markerPosition;
+    private static LatLng CurrentPosition, markerPosition;
     Handler h = new Handler();
     private static String ID;
     private static int internalID;
@@ -85,14 +83,14 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
             public void onClick(View view) {
                 PopupMenu popup = new PopupMenu(TrackingGroupActivity.this, dropDownButton);
                 // Inflating the popup using xml file
-                popup.getMenuInflater().inflate(R.menu.popup_menu_group, popup.getMenu());
+                popup.getMenuInflater().inflate(R.menu.popup_menu_group_1device, popup.getMenu());
 
                 //registering popup with OnMenuItemClickListener
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
 
-                        if (menuItem.getGroupId() == R.id.ShowDistance && markerPosition != null){
+                        if (menuItem.getGroupId() == R.id.ShowRed && markerPosition != null){
 
                             DecimalFormat twodecimalDistance = new DecimalFormat("0.00");
 
@@ -100,7 +98,7 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
 
                             Toast.makeText(TrackingGroupActivity.this, menuItem.getTitle() + " to marker: " + twodecimalDistance.format(distance) + " Km", Toast.LENGTH_LONG).show();
 
-                        } else if (menuItem.getGroupId() == R.id.ShowDistance && markerPosition != null) {
+                        } else if (menuItem.getGroupId() == R.id.ShowEdit && markerPosition != null) {
 
                             System.out.print("Speed");
 

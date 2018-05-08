@@ -4,7 +4,44 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent"
+    android:background="@drawable/soccerfield"
     tools:context="com.example.matos.trackmore.TrackingSportActivity">
 
+    <ImageButton
+        android:id="@+id/topleftcorner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:background="@android:color/transparent"
+        android:backgroundTint="@android:color/transparent"
+        app:srcCompat="@drawable/topleftcorner" />
+
+    <ImageButton
+        android:id="@+id/lowleftcorner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:background="@android:color/transparent"
+        app:srcCompat="@drawable/lowleftcorner" />
+
+    <ImageButton
+        android:id="@+id/lowrightcorner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:background="@android:color/transparent"
+        app:srcCompat="@drawable/lowrightcorner" />
+
+    <ImageButton
+        android:id="@+id/toprightcorner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/transparent"
+        app:srcCompat="@drawable/toprightcorner" />
 </RelativeLayout>
