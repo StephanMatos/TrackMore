@@ -1,6 +1,8 @@
 package com.example.matos.trackmore;
 
 import android.app.Application;
+import android.os.AsyncTask;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -54,7 +56,6 @@ public class Network extends Application {
     public PrintWriter getPw(){
         return pw;
     }
-
 
 }
 

@@ -39,15 +39,10 @@ import java.util.ArrayList;
 public class TrackingIndividualActivity extends FragmentActivity implements OnMapReadyCallback {
 
     GoogleMap mMap;
-
-    Marker[] markers = new Marker[4];
     LatLng CurrentPosition;
     LatLng markerPosition;
     Handler h = new Handler();
-    String ID;
-    int foreignID;
     int delay = 10 * 500;
-    int SYSTEM = 0;
     private ImageButton dropDownButton;
     static Network network = Network.getInstance();
     private static  boolean action;
