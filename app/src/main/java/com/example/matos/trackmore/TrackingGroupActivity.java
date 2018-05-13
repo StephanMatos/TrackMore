@@ -240,10 +240,6 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
                 }
 
             }
-
-            if(SYSTEM == 7){
-                System.out.println("json object read");
-            }
             return markerPosition;
         }
 
@@ -262,23 +258,36 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
     private static void makeMarker(LatLng position){
 
         internalID = translateID(ID);
+        int size = 0;
 
         if(internalID == 1){
             Marker redMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-            if(red.size() > 0){
-                red.get(0).remove();
-                red.clear();
+            if(red.size() == 0){
+
+                red.add(redMarker);
+
+                //red.clear();
+            } else{
+                size = red.size();
+                red.get(size-1).remove();
+                red.add(redMarker);
             }
-            red.add(redMarker);
+
+
         } else if(internalID == 2){
 
-            Marker yellowMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
-            if(yellow.size() > 0){
-                yellow.get(0).remove();
-                yellow.clear();
+            Marker yellowMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            if(yellow.size() == 0){
+
+                yellow.add(yellowMarker);
+
+                //red.clear();
+            } else{
+                size = yellow.size();
+                yellow.get(size-1).remove();
+                yellow.add(yellowMarker);
             }
-            yellow.clear();
-            yellow.add(yellowMarker);
+
         }else if(internalID == 3){
             if(green.size() > 0){
                 green.get(0).remove();

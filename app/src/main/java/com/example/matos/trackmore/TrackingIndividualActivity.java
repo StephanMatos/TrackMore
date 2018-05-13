@@ -54,7 +54,6 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
     private static boolean action;
 
 
-
     @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
