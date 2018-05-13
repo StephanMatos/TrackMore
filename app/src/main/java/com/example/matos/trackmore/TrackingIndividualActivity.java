@@ -47,7 +47,6 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
     static Network network = Network.getInstance();
     private static  boolean action;
 
-
     @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
