@@ -82,9 +82,10 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
             @Override
             public void onClick(View view) {
                 PopupMenu popup = new PopupMenu(TrackingGroupActivity.this, dropDownButton);
+
+
                 // Inflating the popup using xml file
                 popup.getMenuInflater().inflate(R.menu.popup_menu_group_1device, popup.getMenu());
-
                 //registering popup with OnMenuItemClickListener
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
@@ -111,6 +112,7 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
                 popup.show();
             }
         });
+
 
     }
 

@@ -1,6 +1,7 @@
 package com.example.matos.trackmore;
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -12,12 +13,14 @@ import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.Response;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -27,12 +30,15 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -45,7 +51,8 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
     int delay = 10 * 500;
     private ImageButton dropDownButton;
     static Network network = Network.getInstance();
-    private static  boolean action;
+    private static boolean action;
+
 
 
     @SuppressLint("WrongViewCast")
@@ -58,8 +65,8 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-
         new tcp().execute();
+        new HttpGetRequest().execute("http://device1.proxy.beeceptor.com");
 
         dropDownButton = findViewById(R.id.dropdownButton);
         dropDownButton.setOnClickListener(new View.OnClickListener() {
@@ -88,19 +95,14 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
                                 Toast.makeText(TrackingIndividualActivity.this, menuItem.getTitle() + " to marker: " + onedecimalDistance.format(distance) + " m", Toast.LENGTH_LONG).show();
                             }
                         } else if (menuItem.getGroupId() == R.id.ShowDistance && markerPosition != null) {
-
                             System.out.print("Speed");
-
                         }
-
                         return true;
                     }
                 });
-
                 popup.show();
             }
         });
-
     }
 
     @Override
@@ -112,7 +114,6 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-
         // Redraws map every delay's time
         h.postDelayed(new Runnable(){
             public void run(){
@@ -120,7 +121,6 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
                     h.postDelayed(this, delay);
                 }
                 action = false;
-
             }
         }, delay);
 
@@ -131,7 +131,6 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         CurrentPosition = latLng;
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
-
     }
 
     public static class tcp extends AsyncTask<Void, Void, Void> {
@@ -156,6 +155,69 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
             }
             return null;
         }
+    }
+
+    // Access the LoRa data through http-request
+    public class HttpGetRequest extends AsyncTask<String , Void ,String> {
+        String server_response;
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            URL url;
+            HttpURLConnection urlConnection = null;
+
+            try {
+                url = new URL(strings[0]);
+                urlConnection = (HttpURLConnection) url.openConnection();
+
+                int responseCode = urlConnection.getResponseCode();
+
+                if(responseCode == HttpURLConnection.HTTP_OK){
+                    server_response = readStream(urlConnection.getInputStream());
+                    Log.v("CatalogClient", server_response);
+                }
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Log.e("Response", "" + server_response);
+        }
+    }
+
+    // Converting InputStream to String
+    private String readStream(InputStream in) {
+        BufferedReader reader = null;
+        StringBuffer response = new StringBuffer();
+        try {
+            reader = new BufferedReader(new InputStreamReader(in));
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        System.out.println("From HTTP: " + response.toString());
+        return response.toString();
+
     }
 
 }

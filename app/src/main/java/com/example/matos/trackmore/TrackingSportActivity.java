@@ -7,6 +7,7 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageButton;
 
@@ -37,12 +38,17 @@ public class TrackingSportActivity extends AppCompatActivity {
     private  ImageButton lowrightcorner;
     private static LatLng firstcorner;
     private static LatLng secondcorner;
+    private static LatLng Origo;
+    private static LatLng MaxCordinates;
     static LatLng position;
 
-    static int SYSTEM;
+    static int SYSTEM, maksheight, makswidth ;
     static String ID;
     static int internalID;
     static boolean start = false;
+    static boolean firstclick = false;
+    static boolean secondclick = false;
+    static int toprightclick = 0;
     static Network network = Network.getInstance();
     static BufferedReader bir;
 
@@ -63,9 +69,13 @@ public class TrackingSportActivity extends AppCompatActivity {
                 topleftcorner.setVisibility(View.GONE);
                 toprightcorner.setVisibility(View.GONE);
                 lowleftcorner.setVisibility(View.GONE);
+                if (firstclick == false){
+                    firstclick = true;
+                } else {
+                    secondclick = true;
+                }
                 GetOwnLocation();
             }
-
         });
 
         toprightcorner.setOnClickListener(new View.OnClickListener() {
@@ -74,9 +84,14 @@ public class TrackingSportActivity extends AppCompatActivity {
                 topleftcorner.setVisibility(View.GONE);
                 toprightcorner.setVisibility(View.GONE);
                 lowrightcorner.setVisibility(View.GONE);
+                // check whether this button was clicked secondly or first
+                if (toprightclick == 0){
+                    toprightclick = 1;
+                } else{
+                    toprightclick = 2;
+                }
                 GetOwnLocation();
             }
-
         });
 
         lowleftcorner.setOnClickListener(new View.OnClickListener() {
@@ -85,9 +100,12 @@ public class TrackingSportActivity extends AppCompatActivity {
                 topleftcorner.setVisibility(View.GONE);
                 lowleftcorner.setVisibility(View.GONE);
                 lowrightcorner.setVisibility(View.GONE);
+                // Check whether this button was clicked secondly or first
+                if (toprightclick == 0){
+                    toprightclick = 3;
+                }
                 GetOwnLocation();
             }
-
         });
 
         lowrightcorner.setOnClickListener(new View.OnClickListener() {
@@ -96,12 +114,14 @@ public class TrackingSportActivity extends AppCompatActivity {
                 toprightcorner.setVisibility(View.GONE);
                 lowleftcorner.setVisibility(View.GONE);
                 lowrightcorner.setVisibility(View.GONE);
+                if (firstclick == false){
+                    firstclick = true;
+                }
                 GetOwnLocation();
             }
-
         });
     }
-
+    // Method to get the phones location
     public void GetOwnLocation(){
         LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         @SuppressLint("MissingPermission")
@@ -114,8 +134,42 @@ public class TrackingSportActivity extends AppCompatActivity {
         } else {
             secondcorner = latlng;
             System.out.println("Secondcorner: " + secondcorner);
+            CalFieldPixels();
         }
     }
+
+    // Method to calculate the field pixels in dp
+    public void CalFieldPixels() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        maksheight = metrics.heightPixels;
+        makswidth = metrics.widthPixels;
+
+        if (firstclick){
+            Origo = firstcorner;
+            MaxCordinates = secondcorner;
+            CalFieldPixels();
+        } else if (secondclick){
+            Origo = secondcorner;
+            MaxCordinates = firstcorner;
+            CalFieldPixels();
+        } else {
+            if (toprightclick == 2){
+                Origo =  new LatLng(firstcorner.latitude,secondcorner.longitude);
+                MaxCordinates =  new LatLng(firstcorner.longitude,secondcorner.latitude);
+            }else {
+                Origo =  new LatLng(firstcorner.longitude,secondcorner.latitude);
+                MaxCordinates =  new LatLng(firstcorner.latitude,secondcorner.longitude);
+            }
+        }
+    }
+
+
+
+
+
+
 
     public static class tcp extends AsyncTask<Void, Void, Void> {
 
