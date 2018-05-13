@@ -274,14 +274,18 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
 
         } else if(internalID == 2){
 
-            Marker yellowMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
-            if(yellow.size() > 0){
+            Marker yellowMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            if(yellow.size() == 0){
 
-                size = red.size();
+                yellow.add(yellowMarker);
+
+                //red.clear();
+            } else{
+                size = yellow.size();
                 yellow.get(size-1).remove();
-                //yellow.clear();
+                yellow.add(yellowMarker);
             }
-            yellow.add(yellowMarker);
+
         }else if(internalID == 3){
             if(green.size() > 0){
                 green.get(0).remove();
