@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,12 +36,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+
 
 public class TrackingIndividualActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -65,7 +68,9 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         mapFragment.getMapAsync(this);
 
         new tcp().execute();
+
         new HttpGetRequest().execute("http://device1.proxy.beeceptor.com");
+
 
         dropDownButton = findViewById(R.id.dropdownButton);
         dropDownButton.setOnClickListener(new View.OnClickListener() {
@@ -194,7 +199,7 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
     }
 
     // Converting InputStream to String
-    private String readStream(InputStream in) {
+    private String readStream(InputStream in) throws UnsupportedEncodingException {
         BufferedReader reader = null;
         StringBuffer response = new StringBuffer();
         try {
@@ -214,8 +219,14 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
                 }
             }
         }
-        System.out.println("From HTTP: " + response.toString());
-        return response.toString();
+
+        String base64Decode = response.toString();
+        byte[] data = Base64.decode(base64Decode, Base64.DEFAULT);
+        String text = new String(data, "UTF-8");
+
+        System.out.println("From HTTP: " + text);
+
+        return text;
 
     }
 
