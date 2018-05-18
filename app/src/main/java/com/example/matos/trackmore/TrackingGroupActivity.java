@@ -9,17 +9,24 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
+
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,6 +35,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.maps.android.SphericalUtil;
 
 import org.json.JSONException;
@@ -41,9 +49,13 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.io.FileWriter;
 
-public class TrackingGroupActivity extends FragmentActivity implements OnMapReadyCallback {
+public class TrackingGroupActivity extends AppCompatActivity implements OnMapReadyCallback {
+    private FusedLocationProviderClient mFusedLocationProviderClient;
 
     private static GoogleMap mMap;
+    private static final String TAG = TrackingGroupActivity.class.getSimpleName();
+    private Location mLastKnownLocation;
+    private float zoom = 15;
     private static ArrayList<Marker> red = new ArrayList<>();
     private static ArrayList<Marker> yellow = new ArrayList<>();
     private static ArrayList<Marker> green = new ArrayList<>();
@@ -51,7 +63,6 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
     private static ArrayList<String> macID = new ArrayList<>();
     private static ArrayList<Integer> RSSI = new ArrayList<>();
     private static ArrayList<Double> Offset = new ArrayList<>();
-
 
     private static int i = 1;
     private static LatLng CurrentPosition, markerPosition;
@@ -64,10 +75,9 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
     private static boolean action = false;
     static Network network = Network.getInstance();
     private static BufferedReader bir;
-    static double meter = 5;
+    static double meter = 25;
     LocationManager lm;
     static Location location;
-
 
 
     @SuppressLint("WrongViewCast")
@@ -99,11 +109,11 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
 
-                        if (menuItem.getGroupId() == R.id.ShowRed && markerPosition != null){
+                        if (menuItem.getGroupId() == R.id.ShowRed && markerPosition != null) {
 
                             DecimalFormat twodecimalDistance = new DecimalFormat("0.00");
 
-                            double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, markerPosition)/1000;
+                            double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, markerPosition) / 1000;
 
                             Toast.makeText(TrackingGroupActivity.this, menuItem.getTitle() + " to marker: " + twodecimalDistance.format(distance) + " Km", Toast.LENGTH_LONG).show();
 
@@ -127,7 +137,7 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        float zoom = 13;
+
 
         // Android needs to peform this check, otherwise location will not be shown
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -135,9 +145,9 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
         }
 
         // Redraws map every delay's time
-        h.postDelayed(new Runnable(){
-            public void run(){
-                if(action){
+        h.postDelayed(new Runnable() {
+            public void run() {
+                if (action) {
                     h.postDelayed(this, delay);
                     action = false;
                     System.out.println("redraw");
@@ -146,16 +156,42 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
         }, delay);
 
 
-
         // Location of device, zoom to location of device
         mMap.setMyLocationEnabled(true);
-        lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         CurrentPosition = latLng;
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
     }
+
+    private void getDeviceLocation() {
+
+        try {
+
+                Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
+                locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task) {
+                        if (task.isSuccessful()) {
+                            // Set the map's camera position to the current location of the device.
+                            mLastKnownLocation = task.getResult();
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                    new LatLng(mLastKnownLocation.getLatitude(),
+                                            mLastKnownLocation.getLongitude()), zoom));
+                        } else {
+                            Log.d(TAG, "Current location is null. Using defaults.");
+                            Log.e(TAG, "Exception: %s", task.getException());
+                        }
+                    }
+                });
+
+        } catch (SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage());
+        }
+    }
+
 
     public static class tcp extends AsyncTask<Void, Void, Void> {
 
@@ -334,7 +370,8 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
         action = true;
         System.out.println(action);
         System.out.println(RSSI.size());
-        if(RSSI.size() < 20){
+
+        if(RSSI.size() < 100){
             new readBuffer().execute();
         }else{
             double sumrssi = 0;
