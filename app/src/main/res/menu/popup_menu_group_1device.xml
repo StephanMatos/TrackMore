@@ -5,7 +5,7 @@
     <group android:id="@+id/ShowRed" >
         <item
             android:id="@+id/Red"
-            android:title="Red-marker"/>
+            android:title="Test"/>
 
     </group>
 

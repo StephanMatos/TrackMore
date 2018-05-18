@@ -83,7 +83,6 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
             public void onClick(View view) {
                 PopupMenu popup = new PopupMenu(TrackingGroupActivity.this, dropDownButton);
 
-
                 // Inflating the popup using xml file
                 popup.getMenuInflater().inflate(R.menu.popup_menu_group_1device, popup.getMenu());
                 //registering popup with OnMenuItemClickListener
@@ -93,12 +92,18 @@ public class TrackingGroupActivity extends FragmentActivity implements OnMapRead
 
                         if (menuItem.getGroupId() == R.id.ShowRed && markerPosition != null){
 
+                            // lav testing her!
+
                             DecimalFormat twodecimalDistance = new DecimalFormat("0.00");
 
                             double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, markerPosition)/1000;
 
+
+                            // laver kun en toast, dvs den forsvinder igen efter lidt tid
+
                             Toast.makeText(TrackingGroupActivity.this, menuItem.getTitle() + " to marker: " + twodecimalDistance.format(distance) + " Km", Toast.LENGTH_LONG).show();
 
+                            // Fordi der er to "knapper" du kan finde menuen under app->res->menu->popup_menu_group_1device
                         } else if (menuItem.getGroupId() == R.id.ShowEdit && markerPosition != null) {
 
                             System.out.print("Speed");

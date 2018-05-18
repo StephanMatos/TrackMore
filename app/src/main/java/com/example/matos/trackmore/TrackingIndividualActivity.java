@@ -171,8 +171,11 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
                     InputStream inputStream = httpsURLConnection.getInputStream();
                     InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
                     JsonReader jsonReader = new JsonReader(inputStreamReader);
+                  //  jsonReader.setLenient(true);
+                    jsonReader.beginArray();
 
-                    System.out.println("jsonReader: " + jsonReader);
+                    //System.out.println("Inputstream: " + inputStreamReader.read() + " " + inputStreamReader.read());
+                    System.out.println("jsonReader: " + jsonReader.nextName());
 
                     httpsValue = jsonReader.toString();
                     System.out.println("Message from Swagger: " + httpsValue);
