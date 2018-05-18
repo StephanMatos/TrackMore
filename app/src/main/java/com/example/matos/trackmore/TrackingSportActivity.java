@@ -10,11 +10,9 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,17 +30,21 @@ public class TrackingSportActivity extends AppCompatActivity {
     private static ArrayList<LatLng> blue = new ArrayList<>();
     private static ArrayList<String> macID = new ArrayList<>();
 
-    private  ImageButton topleftcorner;
-    private  ImageButton lowleftcorner;
-    private  ImageButton toprightcorner;
-    private  ImageButton lowrightcorner;
+    private ImageButton topleftcorner;
+    private ImageButton lowleftcorner;
+    private ImageButton toprightcorner;
+    private ImageButton lowrightcorner;
+    private ImageView bluetop;
+    private ImageView redtop;
+    private ImageView yellowtop;
+    private ImageView greentop;
     private static LatLng firstcorner;
     private static LatLng secondcorner;
     private static LatLng Origo;
     private static LatLng MaxCordinates;
     static LatLng position;
 
-    static int SYSTEM, maksheight, makswidth ;
+    static int SYSTEM, maksY, maksX;
     static String ID;
     static int internalID;
     static boolean start = false;
@@ -57,11 +59,14 @@ public class TrackingSportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tracking_sport);
 
-
         topleftcorner = findViewById(R.id.topleftcorner);
         lowleftcorner = findViewById(R.id.lowleftcorner);
         toprightcorner = findViewById(R.id.toprightcorner);
         lowrightcorner = findViewById(R.id.lowrightcorner);
+        bluetop = findViewById(R.id.BlueShirt);
+        redtop = findViewById(R.id.RedShirt);
+        yellowtop = findViewById(R.id.YellowShirt);
+        greentop = findViewById(R.id.GreenShirt);
 
         topleftcorner.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,27 +148,36 @@ public class TrackingSportActivity extends AppCompatActivity {
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-        maksheight = metrics.heightPixels;
-        makswidth = metrics.widthPixels;
+        maksY = metrics.heightPixels - 305;
+        maksX = metrics.widthPixels - 90;
+
+        System.out.println("maksY: "+ maksY + " maksX: " + maksX);
 
         if (firstclick){
             Origo = firstcorner;
             MaxCordinates = secondcorner;
-            CalFieldPixels();
+            System.out.println("Origo: "+ Origo + " MaxCordinates: " +MaxCordinates);
+            bluetop.setVisibility(View.VISIBLE);
+            bluetop.setX(0);
+            bluetop.setY(0);
         } else if (secondclick){
             Origo = secondcorner;
             MaxCordinates = firstcorner;
-            CalFieldPixels();
+            System.out.println("Origo: "+ Origo + " MaxCordinates: " +MaxCordinates);
         } else {
             if (toprightclick == 2){
                 Origo =  new LatLng(firstcorner.latitude,secondcorner.longitude);
                 MaxCordinates =  new LatLng(firstcorner.longitude,secondcorner.latitude);
+                System.out.println("Origo: "+ Origo + " MaxCordinates: " +MaxCordinates);
             }else {
                 Origo =  new LatLng(firstcorner.longitude,secondcorner.latitude);
                 MaxCordinates =  new LatLng(firstcorner.latitude,secondcorner.longitude);
+                System.out.println("Origo: "+ Origo + " MaxCordinates: " +MaxCordinates);
             }
         }
     }
+
+
 
 
 
