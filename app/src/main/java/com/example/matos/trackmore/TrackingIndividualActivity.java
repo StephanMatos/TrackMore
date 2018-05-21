@@ -1,17 +1,19 @@
 package com.example.matos.trackmore;
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Base64;
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,11 +21,14 @@ import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.Response;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
 
 import java.io.BufferedReader;
@@ -34,10 +39,10 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.text.DecimalFormat;
-
-import javax.net.ssl.HttpsURLConnection;
+import java.util.ArrayList;
 
 
 public class TrackingIndividualActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -50,7 +55,6 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
     private ImageButton dropDownButton;
     static Network network = Network.getInstance();
     private static boolean action;
-    String httpsValue = "";
 
 
     @SuppressLint("WrongViewCast")
@@ -65,7 +69,8 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
 
         //new tcp().execute();
 
-        new HttpsGetRequest().execute();
+        //new HttpGetRequest().execute("http://device1.proxy.beeceptor.com");
+
 
         dropDownButton = findViewById(R.id.dropdownButton);
         dropDownButton.setOnClickListener(new View.OnClickListener() {
@@ -156,55 +161,74 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         }
     }
 
+
     // Access the LoRa data through http-request
-    public class HttpsGetRequest extends AsyncTask<Void, Void ,Void> {
+    public class HttpGetRequest extends AsyncTask<String , Void ,String> {
+        String server_response;
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected String doInBackground(String... strings) {
+
+            URL url;
+            HttpURLConnection urlConnection = null;
 
             try {
-                URL url = new URL("https://trackmore.data.thethingsnetwork.org/#!/query/get_api_v2_query");
-                HttpsURLConnection httpsURLConnection = (HttpsURLConnection) url.openConnection();
-                HttpsURLConnection.setDefaultRequestProperty("Authorization", "ttn-account-v2.Cr9EGHQeqfyvMb0oB8gYNIwIBVJi4hPBg2i5fsYLUmI");
+                url = new URL(strings[0]);
+                urlConnection = (HttpURLConnection) url.openConnection();
 
-                if (httpsURLConnection.getResponseCode() == 200) {
-                    InputStream inputStream = httpsURLConnection.getInputStream();
-                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
-                    JsonReader jsonReader = new JsonReader(inputStreamReader);
-                  //  jsonReader.setLenient(true);
-                    jsonReader.beginArray();
+                int responseCode = urlConnection.getResponseCode();
 
-                    //System.out.println("Inputstream: " + inputStreamReader.read() + " " + inputStreamReader.read());
-                    System.out.println("jsonReader: " + jsonReader.nextName());
-
-                    httpsValue = jsonReader.toString();
-                    System.out.println("Message from Swagger: " + httpsValue);
-
-
-                    jsonReader.close();
-                } else {
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    System.out.println("Could not fetch data from https");
-                    new HttpsGetRequest().execute();
+                if(responseCode == HttpURLConnection.HTTP_OK){
+                    server_response = readStream(urlConnection.getInputStream());
+                    Log.v("CatalogClient", server_response);
                 }
-
-
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
             return null;
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Log.e("Response", "" + server_response);
         }
     }
+
+    // Converting InputStream to String
+    private String readStream(InputStream in) throws UnsupportedEncodingException {
+        BufferedReader reader = null;
+        StringBuffer response = new StringBuffer();
+        try {
+            reader = new BufferedReader(new InputStreamReader(in));
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        String base64Decode = response.toString();
+        byte[] data = Base64.decode(base64Decode, Base64.DEFAULT);
+        String text = new String(data, "UTF-8");
+
+        System.out.println("From HTTP: " + text);
+
+        return text;
+
+    }
+
 }

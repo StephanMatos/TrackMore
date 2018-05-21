@@ -387,6 +387,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
                 }
                 for(Double meter : Offset){
                     sumMeter += meter;
+                    System.out.println(meter);
                 }
             System.out.println("Avereage result is :   " + sumrssi/RSSI.size());
             System.out.println("Avereage result is :   " + sumMeter/Offset.size());
