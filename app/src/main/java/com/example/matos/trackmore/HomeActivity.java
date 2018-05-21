@@ -61,8 +61,6 @@ public class HomeActivity extends AppCompatActivity{
 
         mSlideViewPager.addOnPageChangeListener(dotListner );
 
-        //new connectWifi().execute();
-
         mNextActivityBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -108,7 +106,6 @@ public class HomeActivity extends AppCompatActivity{
         }
 
     }
-
 
 
 
@@ -166,63 +163,6 @@ public class HomeActivity extends AppCompatActivity{
         }
     };
 
-    private void onScreenMessage(String message){
 
-        Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
-
-    }
-
-    private class connectWifi extends AsyncTask<Void,Void,Void>{
-
-        @Override
-        protected void onPreExecute() {
-            System.out.println("ConnectWifi on pre execute");
-
-        }
-        @Override
-        protected Void doInBackground(Void... voids) {
-            String ssid = "TrackMore-1";
-            String key = "password";
-            String ssid1 = "Network connection failed";
-            WifiConfiguration wifiConfig = new WifiConfiguration();
-            wifiConfig.SSID = String.format("\"%s\"", ssid);
-            wifiConfig.preSharedKey = String.format("\"%s\"", key);
-
-            WifiManager wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
-            int netId = wifiManager.addNetwork(wifiConfig);
-            wifiManager.disconnect();
-            wifiManager.enableNetwork(netId, true);
-            wifiManager.reconnect();
-
-
-            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            if (WifiInfo.getDetailedStateOf(wifiInfo.getSupplicantState()) == NetworkInfo.DetailedState.CONNECTED) {
-                ssid1 = wifiInfo.getSSID();
-            }
-            if(ssid.equals(ssid1)){
-                isConnected = true;
-            }
-
-            return null;
-        }
-        @Override
-        protected void onPostExecute(Void result) {
-
-            if (!isConnected) {
-                onScreenMessage("Connection Failed. Try again.");
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                new connectWifi().execute();
-
-            } else {
-                onScreenMessage("Connected.");
-                isConnected = true;
-            }
-
-        }
-    }
 }
 
