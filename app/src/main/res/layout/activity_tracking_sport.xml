@@ -44,4 +44,41 @@
         android:layout_alignParentTop="true"
         android:background="@android:color/transparent"
         app:srcCompat="@drawable/toprightcorner" />
+
+    <ImageView
+        android:id="@+id/GreenShirt"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/greenfootballtop" />
+
+    <ImageView
+        android:id="@+id/YellowShirt"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/yellowfootballtop" />
+
+    <ImageView
+        android:id="@+id/RedShirt"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/redfootballtop" />
+
+    <ImageView
+        android:id="@+id/BlueShirt"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/bluefootballtop" />
+
 </RelativeLayout>

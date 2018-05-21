@@ -10,11 +10,9 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,17 +30,12 @@ public class TrackingSportActivity extends AppCompatActivity {
     private static ArrayList<LatLng> blue = new ArrayList<>();
     private static ArrayList<String> macID = new ArrayList<>();
 
-    private  ImageButton topleftcorner;
-    private  ImageButton lowleftcorner;
-    private  ImageButton toprightcorner;
-    private  ImageButton lowrightcorner;
-    private static LatLng firstcorner;
-    private static LatLng secondcorner;
-    private static LatLng Origo;
-    private static LatLng MaxCordinates;
-    static LatLng position;
+    private ImageButton topleftcorner, lowleftcorner, toprightcorner, lowrightcorner;
+    private static ImageView bluetop,redtop, yellowtop, greentop;
+    private static LatLng firstcorner, secondcorner, Origo, MaxCordinates, position;
 
-    static int SYSTEM, maksheight, makswidth ;
+    static int SYSTEM, maxDpY, maxDpX;
+    static double SizeRatioY, SizeRatioX;
     static String ID;
     static int internalID;
     static boolean start = false;
@@ -57,11 +50,14 @@ public class TrackingSportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tracking_sport);
 
-
         topleftcorner = findViewById(R.id.topleftcorner);
         lowleftcorner = findViewById(R.id.lowleftcorner);
         toprightcorner = findViewById(R.id.toprightcorner);
         lowrightcorner = findViewById(R.id.lowrightcorner);
+        bluetop = findViewById(R.id.BlueShirt);
+        redtop = findViewById(R.id.RedShirt);
+        yellowtop = findViewById(R.id.YellowShirt);
+        greentop = findViewById(R.id.GreenShirt);
 
         topleftcorner.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,7 +117,8 @@ public class TrackingSportActivity extends AppCompatActivity {
             }
         });
     }
-    // Method to get the phones location
+
+    // To get the phones location
     public void GetOwnLocation(){
         LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         @SuppressLint("MissingPermission")
@@ -138,36 +135,78 @@ public class TrackingSportActivity extends AppCompatActivity {
         }
     }
 
-    // Method to calculate the field pixels in dp
+    // To calculate the field in dp
     public void CalFieldPixels() {
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-        maksheight = metrics.heightPixels;
-        makswidth = metrics.widthPixels;
+        maxDpY = metrics.heightPixels - 305;
+        maxDpX = metrics.widthPixels - 90;
+
+        System.out.println("maksY: "+ maxDpY + " maksX: " + maxDpX);
 
         if (firstclick){
             Origo = firstcorner;
             MaxCordinates = secondcorner;
-            CalFieldPixels();
+            System.out.println("Origo: "+ Origo + " MaxCordinates: " +MaxCordinates);
+            bluetop.setVisibility(View.VISIBLE);
+            bluetop.setX(0);
+            bluetop.setY(0);
         } else if (secondclick){
             Origo = secondcorner;
             MaxCordinates = firstcorner;
-            CalFieldPixels();
+            System.out.println("Origo: "+ Origo + " MaxCordinates: " +MaxCordinates);
         } else {
             if (toprightclick == 2){
                 Origo =  new LatLng(firstcorner.latitude,secondcorner.longitude);
                 MaxCordinates =  new LatLng(firstcorner.longitude,secondcorner.latitude);
+                System.out.println("Origo: "+ Origo + " MaxCordinates: " +MaxCordinates);
             }else {
                 Origo =  new LatLng(firstcorner.longitude,secondcorner.latitude);
                 MaxCordinates =  new LatLng(firstcorner.latitude,secondcorner.longitude);
+                System.out.println("Origo: "+ Origo + " MaxCordinates: " +MaxCordinates);
             }
         }
     }
 
 
+    // To Calculate the players position on the field
+    public static void SetPlayers(LatLng position){
 
+       double MaxCordinateY = MaxCordinates.latitude;
+       double MaxCordinateX = MaxCordinates.longitude;
+       double OrigoY = Origo.latitude;
+       double OrigoX = Origo.longitude;
+       double X_Cordinate = position.longitude;
+       double Y_Cordinate = position.latitude;
 
+       SizeRatioY = maxDpY/MaxCordinateY;
+       SizeRatioX = maxDpX/MaxCordinateX;
+
+       //Check if the given position is on the field
+       if (X_Cordinate > OrigoX && X_Cordinate < MaxCordinateX && Y_Cordinate > OrigoY && Y_Cordinate < MaxCordinateY){
+
+           //Calculate the lat/lng to dp
+           float xPosition = (float) ((float) X_Cordinate * SizeRatioX);
+           float yPosition = (float) ((float) Y_Cordinate * SizeRatioY);
+
+           //check which shirt to move to the given position
+           if (internalID == 1){
+               redtop.setX(xPosition);
+               redtop.setY(yPosition);
+
+           }else if (internalID == 2){
+               yellowtop.setX(xPosition);
+               yellowtop.setY(yPosition);
+           }else if (internalID == 3){
+               greentop.setX(xPosition);
+               greentop.setY(yPosition);
+           }else {
+               bluetop.setX(xPosition);
+               bluetop.setY(yPosition);
+           }
+       }
+    }
 
 
 
@@ -294,12 +333,20 @@ public class TrackingSportActivity extends AppCompatActivity {
 
         if(internalID == 1){
             red.add(position);
+            redtop.setVisibility(View.VISIBLE);
+            SetPlayers(position);
         } else if(internalID == 2){
             yellow.add(position);
+            yellowtop.setVisibility(View.VISIBLE);
+            SetPlayers(position);
         }else if(internalID == 3){
             green.add(position);
+            greentop.setVisibility(View.VISIBLE);
+            SetPlayers(position);
         }else if(internalID == 4){
             blue.add(position);
+            bluetop.setVisibility(View.VISIBLE);
+            SetPlayers(position);
         }
         new readBuffer().execute();
     }
