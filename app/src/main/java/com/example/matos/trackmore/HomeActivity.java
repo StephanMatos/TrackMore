@@ -48,10 +48,10 @@ public class HomeActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        mSlideViewPager = (ViewPager) findViewById(R.id.SlideView);
-        mDotLayout = (LinearLayout) findViewById(R.id.dotsLayout);
+        mSlideViewPager = findViewById(R.id.SlideView);
+        mDotLayout = findViewById(R.id.dotsLayout);
 
-        mNextActivityBtn = (Button) findViewById(R.id.nxtActivityBnt);
+        mNextActivityBtn = findViewById(R.id.nxtActivityBnt);
 
         sliderAdapter = new SliderAdapter(this);
 
@@ -85,13 +85,9 @@ public class HomeActivity extends AppCompatActivity{
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            // Should we show an explanation?
+
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
 
             } else {
 
@@ -133,13 +129,13 @@ public class HomeActivity extends AppCompatActivity{
             mdots[i] = new TextView(this);
             mdots[i].setText(Html.fromHtml("&#8226"));
             mdots[i].setTextSize(40);
-            mdots[i].setTextColor(getResources().getColor(R.color.TransparentWhite));
+            mdots[i].setTextColor(getResources().getColor(R.color.TransparentWhite, getTheme()));
 
             mDotLayout.addView(mdots[i]);
         }
 
         if (mdots.length >   0) {
-            mdots[position].setTextColor(getResources().getColor(R.color.White));
+            mdots[position].setTextColor(getResources().getColor(R.color.White,getTheme()));
         }
     }
 

@@ -2,7 +2,9 @@ package com.example.matos.trackmore;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -63,8 +65,6 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
     private static ArrayList<String> macID = new ArrayList<>();
     private static ArrayList<Integer> RSSI = new ArrayList<>();
     private static ArrayList<Double> Offset = new ArrayList<>();
-
-    private static int i = 1;
     private static LatLng CurrentPosition, markerPosition;
     Handler h = new Handler();
     private static String ID;
@@ -74,11 +74,13 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
     private ImageButton dropDownButton;
     private static boolean action = false;
     static Network network = Network.getInstance();
-    private static BufferedReader bir;
-
+    private static BufferedReader bir = network.getBir();
+    public static Activity activity;
     LocationManager lm;
     static Location location;
-
+    private static Context mContext;
+    public static int countRED,countYellow,countBLUE,countGreen;
+    public static boolean RED,GREEN,YELLOW,BLUE;
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -89,13 +91,13 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-
+        mContext = this;
         new tcp().execute();
         new readBuffer().execute();
+        activity = this;
 
 
-        dropDownButton = (ImageButton) findViewById(R.id.dropdownButton);
+        dropDownButton = findViewById(R.id.dropdownButton);
         dropDownButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -140,7 +142,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(GoogleMap googleMap) throws NullPointerException {
         mMap = googleMap;
 
 
@@ -201,42 +203,53 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
     public static class tcp extends AsyncTask<Void, Void, Void> {
 
         protected Void doInBackground(Void... params) {
-
+            int retry = 0;
+            boolean connection = true;
             while(!network.Init()){
+
                 System.out.println("inside loop tcp");
                 try {
                     Thread.sleep(10000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                retry++;
+                if(retry > 3){
+                    connection = false;
+                    break;
+                }
             }
-
-            PrintWriter pw = network.getPw();
-            System.out.println("this is pw"+pw);
-            if(pw != null){
-                pw.println("{\"ID\":0,\"SYSTEM\":9,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
-                pw.println("{\"ID\":0,\"SYSTEM\":2,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
-                pw.flush();
+            if(connection) {
+                PrintWriter pw = network.getPw();
+                System.out.println("this is pw" + pw);
+                if (pw != null) {
+                    pw.println("{\"ID\":0,\"SYSTEM\":9,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
+                    pw.println("{\"ID\":0,\"SYSTEM\":2,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
+                    pw.flush();
+                }
+            }else{
+                Intent home = new Intent(mContext, HomeActivity.class);
+                mContext.startActivity(home);
+                activity.finish();
             }
-
             return null;
         }
-
     }
+
 
     public static class readBuffer extends AsyncTask<Void, Void,String>{
 
         @Override
         protected String doInBackground(Void... voids) {
-            bir = network.getBir();
-            String message = null;
+
+            String message = "Null";
             try {
                 message = bir.readLine();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             System.out.println("Message is : "+message);
-            if(message == null){
+            if(message.equals("Null")){
                 try {
                     Thread.sleep(20000);
                 } catch (InterruptedException e) {
@@ -248,7 +261,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
 
         @Override
         protected void onPostExecute(String s) {
-            if(s == null){
+            if(s.equals("Null")){
                 new readBuffer().execute();
             }else{
                 new makeJsonObject().execute(s);
@@ -264,21 +277,13 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
             markerPosition = null;
             try {
                 json = new JSONObject(strings[0]);
-            } catch (JSONException e) {
+                SYSTEM = (json.getInt("SYSTEM"));
+            } catch (NullPointerException | JSONException e) {
                 e.printStackTrace();
                 System.out.println("json object failed");
             }
 
-            try {
-                SYSTEM = (json.getInt("SYSTEM"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (NullPointerException e1){
-                e1.printStackTrace();
-            }
-
             if(SYSTEM == 2){
-
                 try {
                     ID = json.getString("ID");
                     String lat = json.getString("LATITUDE");
@@ -304,7 +309,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
                     System.out.println("Offset is : "+m);
                     Offset.add(m);
 
-                } catch (JSONException e) {
+                } catch (JSONException | NullPointerException e) {
                     e.printStackTrace();
                 }
 
@@ -327,56 +332,61 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
     private static void makeMarker(LatLng position){
 
         internalID = translateID(ID);
-        int size = 0;
+        int size;
+        count(internalID);
 
         if(internalID == 1){
+            RED = true;
             Marker redMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
             if(red.size() == 0){
                 red.add(redMarker);
-                //red.clear();
+
             } else{
                 size = red.size();
                 red.get(size-1).remove();
+                red.clear();
                 red.add(redMarker);
             }
 
-
         } else if(internalID == 2){
-
+            YELLOW = true;
             Marker yellowMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
             if(yellow.size() == 0){
-
                 yellow.add(yellowMarker);
-
-                //red.clear();
             } else{
                 size = yellow.size();
                 yellow.get(size-1).remove();
+                yellow.clear();
                 yellow.add(yellowMarker);
             }
 
         }else if(internalID == 3){
-            if(green.size() > 0){
-                green.get(0).remove();
+            GREEN = true;
+            Marker greenMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            if(green.size() == 0){
+                green.add(greenMarker);
+            } else{
+                size = green.size();
+                green.get(size-1).remove();
                 green.clear();
+                green.add(greenMarker);
             }
-            Marker greenMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-            green.clear();
-            green.add(greenMarker);
+
         }else if(internalID == 4){
-            if(blue.size() > 0){
-                blue.get(0).remove();
+            BLUE = true;
+            Marker blueMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            if(blue.size() == 0){
+                blue.add(blueMarker);
+            } else{
+                size = blue.size();
+                blue.get(size-1).remove();
                 blue.clear();
+                blue.add(blueMarker);
             }
-            Marker blueMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-            blue.clear();
-            blue.add(blueMarker);
         }
 
         action = true;
-        System.out.println(action);
         System.out.println(RSSI.size());
-
         if(RSSI.size() < 100){
             new readBuffer().execute();
         }else{
@@ -384,7 +394,6 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
             double sumMeter = 0;
             int badRSSI = -30;
             int bestRSSI = -100;
-
 
                 for (Integer rssi : RSSI) {
                     if(rssi>bestRSSI){
@@ -420,6 +429,34 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         return internalID;
     }
 
+    private static void count(int id){
+        if(id == 1){
+            countRED = 0;
+            countYellow++;
+            countGreen++;
+            countBLUE++;
+        }else if( id == 2){
+            countRED++;
+            countYellow = 0;
+            countGreen++;
+            countBLUE++;
+        }else if (id == 3){
+            countRED++;
+            countYellow++;
+            countGreen = 0;
+            countBLUE++;
+        }else if (id == 4){
+            countRED++;
+            countYellow++;
+            countGreen++;
+            countBLUE = 0;
+        }
 
+        if(countRED > 10 && RED || countYellow > 10 && YELLOW || countGreen > 10 && GREEN || countBLUE > 10 && BLUE){
+            // do Lora
+
+        }
+
+    }
 
 }

@@ -10,27 +10,24 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-/**
- * Created by frederikagerkvist on 14/02/2018.
- */
 
 public class SliderAdapter extends PagerAdapter {
 
-    Context context;
-    LayoutInflater layoutInflater;
+    private Context context;
+    private LayoutInflater layoutInflater;
 
-    public SliderAdapter(Context context) {
+    SliderAdapter(Context context) {
          this.context = context;
     }
 
-    public int[] slide_images = {
+    private int[] slide_images = {
 
             R.drawable.trackindividual1,
             R.drawable.trackgroup1,
             R.drawable.tracksport1,
     };
 
-    public String[] slide_headings = {
+    private String[] slide_headings = {
 
             "One device",
             "Multiple devices",
@@ -44,17 +41,17 @@ public class SliderAdapter extends PagerAdapter {
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
-        return view == (RelativeLayout) object;
+        return view == object;
     }
 
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
+    public Object instantiateItem(ViewGroup container, int position) throws NullPointerException{
 
-        layoutInflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+        layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.slide_layout,container, false);
 
-        ImageView slideImageView = (ImageView) view.findViewById(R.id.slide_image);
-        TextView slideHeading = (TextView) view.findViewById(R.id.slide_heading);
+        ImageView slideImageView = view.findViewById(R.id.slide_image);
+        TextView slideHeading = view.findViewById(R.id.slide_heading);
 
         slideImageView.setImageResource(slide_images[position ]);
         slideHeading.setText(slide_headings[position]);
