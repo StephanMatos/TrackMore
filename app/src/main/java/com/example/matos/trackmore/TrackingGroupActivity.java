@@ -2,18 +2,13 @@ package com.example.matos.trackmore;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -22,13 +17,9 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
-
 import com.google.android.gms.location.FusedLocationProviderClient;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -37,52 +28,42 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.maps.android.SphericalUtil;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.io.FileWriter;
+
 
 public class TrackingGroupActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static TrackingGroupActivity instance = null;
 
     // google map
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    private GoogleMap mMap;
+    private static GoogleMap mMap;
     private final String TAG = TrackingGroupActivity.class.getSimpleName();
-    private Location mLastKnownLocation;
+    private static Location mLastKnownLocation;
     private float zoom = 17;
     Handler h = new Handler();
     int delay = 10 * 500;
 
-
     // Location markers
-    private ArrayList<Marker> red = new ArrayList<>();
-    private ArrayList<Marker> yellow = new ArrayList<>();
-    private ArrayList<Marker> green = new ArrayList<>();
-    private ArrayList<Marker> blue = new ArrayList<>();
-    private LatLng CurrentPosition, markerPosition;
-    public LocationManager lm;
-    public Location location;
-
+    private static ArrayList<Marker> red = new ArrayList<>();
+    private static ArrayList<Marker> yellow = new ArrayList<>();
+    private static ArrayList<Marker> green = new ArrayList<>();
+    private static ArrayList<Marker> blue = new ArrayList<>();
+    private static LatLng CurrentPosition, markerPosition;
+    public static LocationManager lm;
+    public static Location location;
+    private static boolean action;
     // Device ID
-    private ArrayList<String> macID = new ArrayList<>();
-    private int internalID;
+    private static ArrayList<String> macID = new ArrayList<>();
+    private static int internalID;
 
     // image Button
     private ImageButton dropDownButton;
 
     // Timeout for LoRa
-    public int countRED,countYellow,countBLUE,countGreen;
-    public boolean RED,GREEN,YELLOW,BLUE;
+    public static int countRED,countYellow,countBLUE,countGreen;
+    public static boolean RED,GREEN,YELLOW,BLUE;
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -93,8 +74,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        new AsyncTCP().execute();
-        new AsyncRead().execute();
+
 
         dropDownButton = findViewById(R.id.dropdownButton);
         dropDownButton.setOnClickListener(new View.OnClickListener() {
@@ -141,7 +121,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) throws NullPointerException {
+    public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
         // Android needs to peform this check, otherwise location will not be shown
@@ -150,7 +130,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         }
 
         // Redraws map every delay's time
-        /* Try without handler
+
         h.postDelayed(new Runnable() {
             public void run() {
                 if (action) {
@@ -160,7 +140,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
                 }
             }
         }, delay);
-        */
+
 
         // Location of device, zoom to location of device
         mMap.setMyLocationEnabled(true);
@@ -170,6 +150,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         CurrentPosition = latLng;
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
+        new AsyncTCP().execute(Integer.valueOf('2'));
     }
 
     private void getDeviceLocation() {
@@ -199,19 +180,21 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
     }
 
 
-    public void makeMarker(String lat, String lon, String ID){
+    public static void makeMarker(String lat, String lon, String ID){
 
         double latitude = Double.parseDouble(lat);
         double longitude = Double.parseDouble(lon);
-        LatLng position = new LatLng(latitude,longitude);
+        markerPosition = new LatLng(latitude,longitude);
 
         internalID = translateID(ID);
         int size;
         count(internalID);
+        action = true;
 
+        System.out.println(markerPosition + ID);
         if(internalID == 1){
             RED = true;
-            Marker redMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            Marker redMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
             if(red.size() == 0){
                 red.add(redMarker);
 
@@ -224,7 +207,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
 
         } else if(internalID == 2){
             YELLOW = true;
-            Marker yellowMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            Marker yellowMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
             if(yellow.size() == 0){
                 yellow.add(yellowMarker);
             } else{
@@ -236,7 +219,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
 
         }else if(internalID == 3){
             GREEN = true;
-            Marker greenMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            Marker greenMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
             if(green.size() == 0){
                 green.add(greenMarker);
             } else{
@@ -248,7 +231,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
 
         }else if(internalID == 4){
             BLUE = true;
-            Marker blueMarker = mMap.addMarker(new MarkerOptions().position(position).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            Marker blueMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
             if(blue.size() == 0){
                 blue.add(blueMarker);
             } else{
@@ -262,7 +245,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         new AsyncRead().execute();
     }
 
-    private int translateID(String foreignID){
+    private static int translateID(String foreignID){
 
         if(!macID.contains(foreignID)){
             macID.add(foreignID);
@@ -273,7 +256,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         return internalID;
     }
 
-    private void count(int id){
+    private static void count(int id){
         if(id == 1){
             countRED = 0;
             countYellow++;
@@ -303,10 +286,4 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
 
     }
 
-    public static TrackingGroupActivity getInstance() {
-        if (instance == null) {
-            instance = new TrackingGroupActivity();
-        }
-        return(instance);
-    }
 }

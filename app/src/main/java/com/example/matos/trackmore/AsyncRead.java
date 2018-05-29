@@ -10,6 +10,7 @@ import java.io.IOException;
 public class AsyncRead extends AsyncTask<Void,Void,String> {
     @Override
     protected String doInBackground(Void... voids) {
+        System.out.println("in read");
         Network network = Network.getInstance();
         BufferedReader bir = network.getBir();
         String message = "Null";

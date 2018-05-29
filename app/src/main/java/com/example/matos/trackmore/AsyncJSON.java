@@ -1,18 +1,9 @@
 package com.example.matos.trackmore;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.AsyncTask;
-import com.google.android.gms.maps.model.LatLng;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 public class AsyncJSON extends AsyncTask<String, String, String[]> {
-
-    public LocationManager lm;
-    public Location location;
-
 
     @Override
     protected String[] doInBackground(String... strings) {
@@ -21,7 +12,7 @@ public class AsyncJSON extends AsyncTask<String, String, String[]> {
         String lat = "";
         String lon = "";
         JSONObject json = null;
-        LatLng markerPosition = null;
+
         try {
             json = new JSONObject(strings[0]);
             SYSTEM = (json.getInt("SYSTEM"));
@@ -56,8 +47,8 @@ public class AsyncJSON extends AsyncTask<String, String, String[]> {
             if(strings[0].equals("")){
                 new AsyncRead().execute();
             } else {
-                TrackingGroupActivity track = TrackingGroupActivity.getInstance();
-                track.makeMarker(lat,lon,ID);
+                TrackingGroupActivity.makeMarker(lat,lon,ID);
+
             }
 
             System.out.println("OnPostExecute in MakeJsonObject");
