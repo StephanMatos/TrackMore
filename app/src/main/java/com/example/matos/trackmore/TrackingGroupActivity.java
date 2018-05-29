@@ -75,7 +75,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
     private static boolean action = false;
     static Network network = Network.getInstance();
     private static BufferedReader bir;
-    static double meter = 25;
+
     LocationManager lm;
     static Location location;
 
@@ -212,7 +212,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
             }
 
             PrintWriter pw = network.getPw();
-            System.out.println(pw);
+            System.out.println("this is pw"+pw);
             if(pw != null){
                 pw.println("{\"ID\":0,\"SYSTEM\":9,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
                 pw.println("{\"ID\":0,\"SYSTEM\":2,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
@@ -235,7 +235,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            System.out.println(message);
+            System.out.println("Message is : "+message);
             if(message == null){
                 try {
                     Thread.sleep(20000);
@@ -293,15 +293,16 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
                     markerPosition = new LatLng(latitude,longitude);
 
                     // test af distance
+                    double m = 100.0;
                     double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, markerPosition);
                     System.out.println(distance);
-                    if(distance > meter){
-                        distance = distance-meter;
-                        Offset.add(distance);
-                    }else{
-                        meter = meter - distance;
-                        Offset.add(meter);
+                    if(m > distance){
+                        m = m - distance;
+                    }else {
+                        m = distance - m;
                     }
+                    System.out.println("Offset is : "+m);
+                    Offset.add(m);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -381,15 +382,27 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         }else{
             double sumrssi = 0;
             double sumMeter = 0;
+            int badRSSI = -30;
+            int bestRSSI = -100;
+
 
                 for (Integer rssi : RSSI) {
+                    if(rssi>bestRSSI){
+                        bestRSSI = rssi;
+                    }
+                    if(rssi< badRSSI){
+                        badRSSI = rssi;
+                    }
+
                     sumrssi += rssi;
                 }
                 for(Double meter : Offset){
                     sumMeter += meter;
                     System.out.println(meter);
                 }
-            System.out.println("Avereage result is :   " + sumrssi/RSSI.size());
+            System.out.println("Avereage result is of rssi is :   " + sumrssi/RSSI.size());
+            System.out.println("The best RSSI value was : " + bestRSSI);
+            System.out.println("The worst RSSI value was : " + badRSSI);
             System.out.println("Avereage result is :   " + sumMeter/Offset.size());
             System.out.println("all done ");
         }
