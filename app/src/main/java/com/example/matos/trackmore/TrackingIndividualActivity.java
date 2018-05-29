@@ -3,6 +3,7 @@ package com.example.matos.trackmore;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -11,7 +12,6 @@ import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.util.JsonReader;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -28,7 +28,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -45,7 +44,8 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
     static Network network = Network.getInstance();
     private static boolean action;
     String httpsValue = "";
-
+    public boolean connection = false;
+    Context context = this;
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -57,7 +57,12 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        //new tcp().execute();
+        SharedPreferences sharedPref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+        connection = sharedPref.getBoolean("connection",connection);
+
+        if(!connection){
+            new AsyncTCP().execute();
+        }
 
         new HttpsGetRequest().execute();
 
@@ -126,6 +131,7 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
 
+    /*
     public static class tcp extends AsyncTask<Void, Void, Void> {
 
         protected Void doInBackground(Void... params) {
@@ -145,10 +151,11 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
                 pw.println("{\"ID\":0,\"SYSTEM\":9,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
                 pw.println("{\"ID\":0,\"SYSTEM\":1,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
                 pw.flush();
+                connection = true;
             }
             return null;
         }
-    }
+    }*/
 
     // Access the LoRa data through http-request
     public class HttpsGetRequest extends AsyncTask<Void, Void ,Void> {

@@ -52,35 +52,37 @@ import java.util.ArrayList;
 import java.io.FileWriter;
 
 public class TrackingGroupActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private static TrackingGroupActivity instance = null;
 
-    private static GoogleMap mMap;
-    private static final String TAG = TrackingGroupActivity.class.getSimpleName();
+    // google map
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private GoogleMap mMap;
+    private final String TAG = TrackingGroupActivity.class.getSimpleName();
     private Location mLastKnownLocation;
-    private float zoom = 15;
-    private static ArrayList<Marker> red = new ArrayList<>();
-    private static ArrayList<Marker> yellow = new ArrayList<>();
-    private static ArrayList<Marker> green = new ArrayList<>();
-    private static ArrayList<Marker> blue = new ArrayList<>();
-    private static ArrayList<String> macID = new ArrayList<>();
-    private static ArrayList<Integer> RSSI = new ArrayList<>();
-    private static ArrayList<Double> Offset = new ArrayList<>();
-    private static LatLng CurrentPosition, markerPosition;
+    private float zoom = 17;
     Handler h = new Handler();
-    private static String ID;
-    private static int internalID;
     int delay = 10 * 500;
-    private static int SYSTEM = 0;
+
+
+    // Location markers
+    private ArrayList<Marker> red = new ArrayList<>();
+    private ArrayList<Marker> yellow = new ArrayList<>();
+    private ArrayList<Marker> green = new ArrayList<>();
+    private ArrayList<Marker> blue = new ArrayList<>();
+    private LatLng CurrentPosition, markerPosition;
+    public LocationManager lm;
+    public Location location;
+
+    // Device ID
+    private ArrayList<String> macID = new ArrayList<>();
+    private int internalID;
+
+    // image Button
     private ImageButton dropDownButton;
-    private static boolean action = false;
-    static Network network = Network.getInstance();
-    private static BufferedReader bir = network.getBir();
-    public static Activity activity;
-    LocationManager lm;
-    static Location location;
-    private static Context mContext;
-    public static int countRED,countYellow,countBLUE,countGreen;
-    public static boolean RED,GREEN,YELLOW,BLUE;
+
+    // Timeout for LoRa
+    public int countRED,countYellow,countBLUE,countGreen;
+    public boolean RED,GREEN,YELLOW,BLUE;
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -91,11 +93,8 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        mContext = this;
-        new tcp().execute();
-        new readBuffer().execute();
-        activity = this;
-
+        new AsyncTCP().execute();
+        new AsyncRead().execute();
 
         dropDownButton = findViewById(R.id.dropdownButton);
         dropDownButton.setOnClickListener(new View.OnClickListener() {
@@ -145,13 +144,13 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
     public void onMapReady(GoogleMap googleMap) throws NullPointerException {
         mMap = googleMap;
 
-
         // Android needs to peform this check, otherwise location will not be shown
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
 
         // Redraws map every delay's time
+        /* Try without handler
         h.postDelayed(new Runnable() {
             public void run() {
                 if (action) {
@@ -161,7 +160,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
                 }
             }
         }, delay);
-
+        */
 
         // Location of device, zoom to location of device
         mMap.setMyLocationEnabled(true);
@@ -200,136 +199,11 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
     }
 
 
-    public static class tcp extends AsyncTask<Void, Void, Void> {
+    public void makeMarker(String lat, String lon, String ID){
 
-        protected Void doInBackground(Void... params) {
-            int retry = 0;
-            boolean connection = true;
-            while(!network.Init()){
-
-                System.out.println("inside loop tcp");
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                retry++;
-                if(retry > 3){
-                    connection = false;
-                    break;
-                }
-            }
-            if(connection) {
-                PrintWriter pw = network.getPw();
-                System.out.println("this is pw" + pw);
-                if (pw != null) {
-                    pw.println("{\"ID\":0,\"SYSTEM\":9,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
-                    pw.println("{\"ID\":0,\"SYSTEM\":2,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
-                    pw.flush();
-                }
-            }else{
-                Intent home = new Intent(mContext, HomeActivity.class);
-                mContext.startActivity(home);
-                activity.finish();
-            }
-            return null;
-        }
-    }
-
-
-    public static class readBuffer extends AsyncTask<Void, Void,String>{
-
-        @Override
-        protected String doInBackground(Void... voids) {
-
-            String message = "Null";
-            try {
-                message = bir.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            System.out.println("Message is : "+message);
-            if(message.equals("Null")){
-                try {
-                    Thread.sleep(20000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            return message;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            if(s.equals("Null")){
-                new readBuffer().execute();
-            }else{
-                new makeJsonObject().execute(s);
-            }
-        }
-    }
-
-    public static class makeJsonObject extends AsyncTask<String, Void, LatLng>{
-
-        @Override
-        protected LatLng doInBackground(String... strings) {
-            JSONObject json = null;
-            markerPosition = null;
-            try {
-                json = new JSONObject(strings[0]);
-                SYSTEM = (json.getInt("SYSTEM"));
-            } catch (NullPointerException | JSONException e) {
-                e.printStackTrace();
-                System.out.println("json object failed");
-            }
-
-            if(SYSTEM == 2){
-                try {
-                    ID = json.getString("ID");
-                    String lat = json.getString("LATITUDE");
-                    double latitude = Double.parseDouble(lat);
-                    String lon = json.getString("LONGITUDE");
-                    double longitude = Double.parseDouble(lon);
-
-                    // test af rssi
-                    int rssi = json.getInt("RSSI");
-                    RSSI.add(rssi);
-                    System.out.println(rssi);
-                    markerPosition = new LatLng(latitude,longitude);
-
-                    // test af distance
-                    double m = 100.0;
-                    double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, markerPosition);
-                    System.out.println(distance);
-                    if(m > distance){
-                        m = m - distance;
-                    }else {
-                        m = distance - m;
-                    }
-                    System.out.println("Offset is : "+m);
-                    Offset.add(m);
-
-                } catch (JSONException | NullPointerException e) {
-                    e.printStackTrace();
-                }
-
-            }
-            return markerPosition;
-        }
-
-        @Override
-        protected void onPostExecute(LatLng markerPosistion) {
-            if(markerPosistion != null){
-                makeMarker(markerPosistion);
-            } else {
-                new readBuffer().execute();
-            }
-
-            System.out.println("OnPostExecute in MakeJsonObject");
-        }
-    }
-
-    private static void makeMarker(LatLng position){
+        double latitude = Double.parseDouble(lat);
+        double longitude = Double.parseDouble(lon);
+        LatLng position = new LatLng(latitude,longitude);
 
         internalID = translateID(ID);
         int size;
@@ -385,40 +259,10 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
             }
         }
 
-        action = true;
-        System.out.println(RSSI.size());
-        if(RSSI.size() < 100){
-            new readBuffer().execute();
-        }else{
-            double sumrssi = 0;
-            double sumMeter = 0;
-            int badRSSI = -30;
-            int bestRSSI = -100;
-
-                for (Integer rssi : RSSI) {
-                    if(rssi>bestRSSI){
-                        bestRSSI = rssi;
-                    }
-                    if(rssi< badRSSI){
-                        badRSSI = rssi;
-                    }
-
-                    sumrssi += rssi;
-                }
-                for(Double meter : Offset){
-                    sumMeter += meter;
-                    System.out.println(meter);
-                }
-            System.out.println("Avereage result is of rssi is :   " + sumrssi/RSSI.size());
-            System.out.println("The best RSSI value was : " + bestRSSI);
-            System.out.println("The worst RSSI value was : " + badRSSI);
-            System.out.println("Avereage result is :   " + sumMeter/Offset.size());
-            System.out.println("all done ");
-        }
-
+        new AsyncRead().execute();
     }
 
-    private static int translateID(String foreignID){
+    private int translateID(String foreignID){
 
         if(!macID.contains(foreignID)){
             macID.add(foreignID);
@@ -429,7 +273,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         return internalID;
     }
 
-    private static void count(int id){
+    private void count(int id){
         if(id == 1){
             countRED = 0;
             countYellow++;
@@ -459,4 +303,10 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
 
     }
 
+    public static TrackingGroupActivity getInstance() {
+        if (instance == null) {
+            instance = new TrackingGroupActivity();
+        }
+        return(instance);
+    }
 }
