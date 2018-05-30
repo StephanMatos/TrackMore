@@ -15,7 +15,7 @@ public class AsyncJSON extends AsyncTask<String, String, String[]> {
         String lat = "";
         String lon = "";
         int RSSI = 0;
-        JSONObject json = null;
+        JSONObject json;
         try {
         json = new JSONObject(strings[0]);
         SYSTEM = (json.getInt("SYSTEM"));
@@ -25,6 +25,7 @@ public class AsyncJSON extends AsyncTask<String, String, String[]> {
 
         if (SYSTEM == 2) {
             RSSI = json.getInt("RSSI");
+
             }
 
         }catch(JSONException | NullPointerException e){
@@ -39,15 +40,16 @@ public class AsyncJSON extends AsyncTask<String, String, String[]> {
         String lat = strings[0];
         String lon = strings[1];
         String ID = strings[2];
-        int sys = Integer.parseInt(strings[3]);
+        String sys = strings[3];
+            System.out.println(sys);
 
-            if(sys == '2') {
+            if(sys.equals("2")) {
                 TrackingGroupActivity.makeMarker(lat,lon,ID);
 
-            } else if(sys == '3'){
+            } else if(sys.equals("3")){
                 TrackingSportActivity.addPosition(lat,lon,ID);
             }else {
-                new AsyncTCP().execute();
+                new AsyncRead().execute();
             }
         }
     }

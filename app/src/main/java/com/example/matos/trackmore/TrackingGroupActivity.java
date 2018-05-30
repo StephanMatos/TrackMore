@@ -38,7 +38,6 @@ import java.util.ArrayList;
 
 
 public class TrackingGroupActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private static TrackingGroupActivity instance = null;
 
     // google map
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -166,12 +165,17 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
 */
 
         // Location of device, zoom to location of device
-        mMap.setMyLocationEnabled(true);
-        lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        CurrentPosition = latLng;
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        try{
+            mMap.setMyLocationEnabled(true);
+            lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            CurrentPosition = latLng;
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        } catch (NullPointerException e){
+            e.printStackTrace();
+        }
+
 
         new AsyncTCP().execute(Integer.valueOf('2'));
     }
@@ -223,7 +227,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
             System.out.println(markerPosition + ID);
             if (internalID == 1) {
                 RED = true;
-                Marker redMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                Marker redMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title("Distance to ID number "+ID+ "is :" + distance).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
                 if (red.size() == 0) {
                     red.add(redMarker);
 
