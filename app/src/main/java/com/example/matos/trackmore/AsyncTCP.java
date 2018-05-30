@@ -7,32 +7,25 @@ import android.os.AsyncTask;
 import java.io.PrintWriter;
 
 
-public class AsyncTCP extends AsyncTask<Integer,Void,Integer>{
+public class AsyncTCP extends AsyncTask<Integer,Void,Void>{
     Network network = Network.getInstance();
 
-    @Override
-    protected void onPreExecute() {
-
-    }
-
-    protected Integer doInBackground(Integer... integers) {
-            System.out.println("in tcp");
+    protected Void doInBackground(Integer... integers) {
             int retry = 0;
-
-
-            try {
                 while(!network.Init()){
                     System.out.println("inside loop tcp");
-                    Thread.sleep(5000);
+                    try {
+                    Thread.sleep(10000);
+                    }catch (InterruptedException e){
+                        e.printStackTrace();
+                    }
                     if(retry> 2){
                         TrackingGroupActivity.stop();
                         break;
                     }
                     retry++;
                 }
-            }catch (InterruptedException e){
-                e.printStackTrace();
-            }
+
 
 
             PrintWriter pw = network.getPw();
@@ -47,7 +40,6 @@ public class AsyncTCP extends AsyncTask<Integer,Void,Integer>{
                     pw.println("{\"ID\":0,\"SYSTEM\":3,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
                 }
 
-
                 pw.flush();
             }else{
                 cancel(true);
@@ -55,16 +47,11 @@ public class AsyncTCP extends AsyncTask<Integer,Void,Integer>{
 
             }
 
-
-            return integers[0];
+          return null;
         }
 
     @Override
-    protected void onPostExecute(Integer integers) {
-
-
-            new AsyncRead().execute(integers);
-
-
+    protected void onPostExecute(Void Void) {
+            new AsyncRead().execute();
     }
 }

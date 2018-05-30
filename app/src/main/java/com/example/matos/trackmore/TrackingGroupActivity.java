@@ -153,7 +153,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         }
 
         // Redraws map every delay's time
-
+/*
         h.postDelayed(new Runnable() {
             public void run() {
                 if (action) {
@@ -163,7 +163,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
                 }
             }
         }, delay);
-
+*/
 
         // Location of device, zoom to location of device
         mMap.setMyLocationEnabled(true);
@@ -209,63 +209,70 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         double longitude = Double.parseDouble(lon);
         markerPosition = new LatLng(latitude,longitude);
 
-        internalID = translateID(ID);
-        int size;
-        count(internalID);
-        action = true;
+        double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, markerPosition);
+        if(distance > 1000){
+            new AsyncRead().execute();
+            return;
 
-        System.out.println(markerPosition + ID);
-        if(internalID == 1){
-            RED = true;
-            Marker redMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-            if(red.size() == 0){
-                red.add(redMarker);
-
-            } else{
-                size = red.size();
-                red.get(size-1).remove();
-                red.clear();
-                red.add(redMarker);
-            }
-
-        } else if(internalID == 2){
-            YELLOW = true;
-            Marker yellowMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-            if(yellow.size() == 0){
-                yellow.add(yellowMarker);
-            } else{
-                size = yellow.size();
-                yellow.get(size-1).remove();
-                yellow.clear();
-                yellow.add(yellowMarker);
-            }
-
-        }else if(internalID == 3){
-            GREEN = true;
-            Marker greenMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-            if(green.size() == 0){
-                green.add(greenMarker);
-            } else{
-                size = green.size();
-                green.get(size-1).remove();
-                green.clear();
-                green.add(greenMarker);
-            }
-
-        }else if(internalID == 4){
-            BLUE = true;
-            Marker blueMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-            if(blue.size() == 0){
-                blue.add(blueMarker);
-            } else{
-                size = blue.size();
-                blue.get(size-1).remove();
-                blue.clear();
-                blue.add(blueMarker);
-            }
         }
 
-        new AsyncRead().execute(Integer.valueOf('2'));
+            internalID = translateID(ID);
+            int size;
+            count(internalID);
+            action = true;
+            System.out.println(markerPosition + ID);
+            if (internalID == 1) {
+                RED = true;
+                Marker redMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                if (red.size() == 0) {
+                    red.add(redMarker);
+
+                } else {
+                    size = red.size();
+                    red.get(size - 1).remove();
+                    red.clear();
+                    red.add(redMarker);
+                }
+
+            } else if (internalID == 2) {
+                YELLOW = true;
+                Marker yellowMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                if (yellow.size() == 0) {
+                    yellow.add(yellowMarker);
+                } else {
+                    size = yellow.size();
+                    yellow.get(size - 1).remove();
+                    yellow.clear();
+                    yellow.add(yellowMarker);
+                }
+
+            } else if (internalID == 3) {
+                GREEN = true;
+                Marker greenMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                if (green.size() == 0) {
+                    green.add(greenMarker);
+                } else {
+                    size = green.size();
+                    green.get(size - 1).remove();
+                    green.clear();
+                    green.add(greenMarker);
+                }
+
+            } else if (internalID == 4) {
+                BLUE = true;
+                Marker blueMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                if (blue.size() == 0) {
+                    blue.add(blueMarker);
+                } else {
+                    size = blue.size();
+                    blue.get(size - 1).remove();
+                    blue.clear();
+                    blue.add(blueMarker);
+                }
+            }
+
+            new AsyncRead().execute();
+
     }
 
     private static int translateID(String foreignID){

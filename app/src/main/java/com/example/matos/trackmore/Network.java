@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.NoRouteToHostException;
@@ -15,6 +16,8 @@ public class Network extends Application {
 
     private static Network instance = null;
     private static Socket sock;
+    private static InputStream inputStream;
+    private static InputStreamReader inputStreamReader;
     private static BufferedReader bir;
     private static PrintWriter pw;
     private boolean succes = true;
@@ -36,8 +39,11 @@ public class Network extends Application {
         String ip = "192.168.1.2";
         try {
             sock = new Socket(ip, 8888);
-            bir = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+            inputStream = sock.getInputStream();
+            inputStreamReader = new InputStreamReader(inputStream);
+            bir = new BufferedReader(inputStreamReader);
             pw = new PrintWriter(sock.getOutputStream());
+
         }catch (IOException e){
             e.printStackTrace();
             System.out.println("init failed");
@@ -48,8 +54,9 @@ public class Network extends Application {
         return succes;
     }
 
-    public Socket getSock(){
-        return sock;
+    public InputStream getInputStream(){
+        return inputStream;
+
     }
     public BufferedReader getBir(){
         return bir;

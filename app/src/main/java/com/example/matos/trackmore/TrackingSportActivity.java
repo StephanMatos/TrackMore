@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.SphericalUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,16 +35,13 @@ public class TrackingSportActivity extends AppCompatActivity {
     private static ImageView bluetop,redtop, yellowtop, greentop;
     private static LatLng firstcorner, secondcorner, Origo, MaxCordinates, position;
 
-    static int SYSTEM, maxDpY, maxDpX;
+    static int  maxDpY, maxDpX;
     static double SizeRatioY, SizeRatioX;
-    static String ID;
     static int internalID;
-    static boolean start = false;
+
     static boolean firstclick = false;
     static boolean secondclick = false;
     static int toprightclick = 0;
-    static Network network = Network.getInstance();
-    static BufferedReader bir;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -208,129 +206,17 @@ public class TrackingSportActivity extends AppCompatActivity {
        }
     }
 
+    public static void addPosition(String lat, String lon, String ID){
+        double Latitude = Double.parseDouble(lat);
+        double Longitude = Double.parseDouble(lon);
+        position = new LatLng(Latitude,Longitude);
 
-
-    public static class tcp extends AsyncTask<Void, Void, Void> {
-
-        protected Void doInBackground(Void... params) {
-
-            while(!network.Init()){
-                System.out.println("inside loop tcp");
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            PrintWriter pw = network.getPw();
-            System.out.println(pw);
-            if(pw != null){
-                pw.println("{\"ID\":0,\"SYSTEM\":9,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
-                pw.println("{\"ID\":0,\"SYSTEM\":2,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
-                pw.flush();
-            }
-
-            return null;
+        double distance = SphericalUtil.computeDistanceBetween(Origo, position);
+        if(distance > 1000){
+            new AsyncRead().execute();
+            return;
         }
-
-    }
-
-    public static class readBuffer extends AsyncTask<Void, Void,String>{
-
-        @Override
-        protected String doInBackground(Void... voids) {
-            bir = network.getBir();
-            String message = null;
-            try {
-                message = bir.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            System.out.println(message);
-            return message;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            // If communication has started only sleep for 5 seconds, else wait 10 so the application wont do to much before messages starts comming in
-            if(start){
-                if(s == null){
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    new readBuffer().execute();
-
-                }else{
-                    new makeJsonObject().execute(s);
-                }
-            } else{
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }
-    }
-
-    public static class makeJsonObject extends AsyncTask<String, Void, LatLng>{
-
-        @Override
-        protected LatLng doInBackground(String... strings) {
-            JSONObject json = null;
-
-            try {
-                json = new JSONObject(strings[0]);
-            } catch (JSONException e) {
-                e.printStackTrace();
-                System.out.println("json object failed");
-            }
-            try {
-                SYSTEM = (json.getInt("SYSTEM"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (NullPointerException e1){
-                e1.printStackTrace();
-            }
-            if(SYSTEM == 3){
-                start = true;
-                try {
-                    ID = json.getString("ID");
-                    String lat = json.getString("LATITUDE");
-                    double latitude = Double.parseDouble(lat);
-                    String lon = json.getString("LONGITUDE");
-                    double longitude = Double.parseDouble(lon);
-                    position = new LatLng(latitude,longitude);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            } else{
-                System.out.println("incorrect message received");
-            }
-            return position;
-        }
-
-        @Override
-        protected void onPostExecute(LatLng Posistion) {
-            if(Posistion != null){
-                addPosition(Posistion);
-            } else {
-                new readBuffer().execute();
-            }
-
-            System.out.println("OnPostExecute in MakeJsonObject");
-        }
-    }
-
-    private static void addPosition(LatLng position){
-
         internalID = translateID(ID);
-
         if(internalID == 1){
             red.add(position);
             redtop.setVisibility(View.VISIBLE);
@@ -348,7 +234,7 @@ public class TrackingSportActivity extends AppCompatActivity {
             bluetop.setVisibility(View.VISIBLE);
             SetPlayers(position);
         }
-        new readBuffer().execute();
+
     }
 
     private static int translateID(String foreignID){
@@ -361,6 +247,4 @@ public class TrackingSportActivity extends AppCompatActivity {
         }
         return internalID;
     }
-
-
 }
