@@ -2,7 +2,11 @@ package com.example.matos.trackmore;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -65,6 +69,8 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
     public static int countRED,countYellow,countBLUE,countGreen;
     public static boolean RED,GREEN,YELLOW,BLUE;
 
+    private static Context mContext;
+
     @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +82,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         mapFragment.getMapAsync(this);
 
 
+        mContext = this;
         dropDownButton = findViewById(R.id.dropdownButton);
         dropDownButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,6 +124,22 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
             }
         });
 
+
+    }
+
+    @Override
+    public void onBackPressed(){
+        new AlertDialog.Builder(this)
+                .setTitle("EXIT")
+                .setMessage("Exit will delete data and end connection")
+                .setNegativeButton(android.R.string.no, null)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        TrackingGroupActivity.super.onBackPressed();
+
+                    }
+                }).create().show();
 
     }
 
@@ -242,7 +265,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
             }
         }
 
-        new AsyncRead().execute();
+        new AsyncRead().execute(Integer.valueOf('2'));
     }
 
     private static int translateID(String foreignID){
@@ -284,6 +307,12 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
 
         }
 
+    }
+
+    public static void stop(){
+        Intent newIntent = new Intent(mContext,HomeActivity.class);
+        mContext.startActivity(newIntent);
+        ((Activity) mContext).finish();
     }
 
 }

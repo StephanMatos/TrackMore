@@ -1,10 +1,12 @@
 package com.example.matos.trackmore;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -41,12 +43,13 @@ public class HomeActivity extends AppCompatActivity{
     private TextView[] mdots;
     private ProgressDialog progress;
     private boolean isConnected = false;
-
+    private static Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        mContext = this;
 
         mSlideViewPager = findViewById(R.id.SlideView);
         mDotLayout = findViewById(R.id.dotsLayout);

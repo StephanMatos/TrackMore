@@ -1,21 +1,39 @@
 package com.example.matos.trackmore;
 
+import android.app.Dialog;
 import android.os.AsyncTask;
+
+
 import java.io.PrintWriter;
 
-public class AsyncTCP extends AsyncTask<Integer,Void,Void>{
-        Network network = Network.getInstance();
-        protected Void doInBackground(Integer... integers) {
-            System.out.println("in tcp");
 
-            while(!network.Init()){
-                System.out.println("inside loop tcp");
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+public class AsyncTCP extends AsyncTask<Integer,Void,Integer>{
+    Network network = Network.getInstance();
+
+    @Override
+    protected void onPreExecute() {
+
+    }
+
+    protected Integer doInBackground(Integer... integers) {
+            System.out.println("in tcp");
+            int retry = 0;
+
+
+            try {
+                while(!network.Init()){
+                    System.out.println("inside loop tcp");
+                    Thread.sleep(5000);
+                    if(retry> 2){
+                        TrackingGroupActivity.stop();
+                        break;
+                    }
+                    retry++;
                 }
+            }catch (InterruptedException e){
+                e.printStackTrace();
             }
+
 
             PrintWriter pw = network.getPw();
             System.out.println(pw);
@@ -31,18 +49,22 @@ public class AsyncTCP extends AsyncTask<Integer,Void,Void>{
 
 
                 pw.flush();
+            }else{
+                cancel(true);
+                System.out.println(isCancelled());
+
             }
 
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return null;
+
+            return integers[0];
         }
 
     @Override
-    protected void onPostExecute(Void aVoid) {
-      new AsyncRead().execute();
+    protected void onPostExecute(Integer integers) {
+
+
+            new AsyncRead().execute(integers);
+
+
     }
 }
