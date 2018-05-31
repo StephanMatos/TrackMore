@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
@@ -11,25 +9,25 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/Current_Distance"
+            android:id="@+id/Total_distance"
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:gravity="center"
-            android:text="Current distance" />
+            android:text="Total distance" />
 
         <TextView
-            android:id="@+id/Previous_Distance"
+            android:id="@+id/avg_speed"
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:gravity="center"
-            android:text="Previous distance" />
+            android:text="average speed" />
 
         <TextView
-            android:id="@+id/Direction"
+            android:id="@+id/high_speed"
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:gravity="center"
-            android:text="Direction" />
+            android:text="Highest speed" />
 
 
     </TableRow>
@@ -39,19 +37,19 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/curDis_Marker"
+            android:id="@+id/totDis_Marker"
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:gravity="center" />
 
         <TextView
-            android:id="@+id/preDis_Marker"
+            android:id="@+id/avgspeed_Marker"
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:gravity="center" />
 
         <TextView
-            android:id="@+id/direction_Marker"
+            android:id="@+id/highspeed_Marker"
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:gravity="center" />

@@ -52,6 +52,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
 
     // Distance
     private static double RedCurrent = 0.0, RedPrev = 0.0, YellowCurrent = 0.0, YellowPrev = 0.0, GreenCurrent = 0.0, GreenPrev = 0.0, BlueCurrent = 0.0, BluePrev = 0.0;
+    private static TextView currentDistance, previousDistance, direction;
 
     // Device ID
     private static ArrayList<String> macID = new ArrayList<>();
@@ -61,7 +62,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
     public static int countRED,countYellow,countBLUE,countGreen;
     public static boolean RED,GREEN,YELLOW,BLUE;
     private static Context mContext;
-    private static TextView currentDistance, previousDistance, direction;
+
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -232,7 +233,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         ((Activity) mContext).finish();
     }
 
-    public  static void MarkerClick(Marker marker){
+    public static void MarkerClick(Marker marker){
 
         marker.setTag(markerPosition);
 
