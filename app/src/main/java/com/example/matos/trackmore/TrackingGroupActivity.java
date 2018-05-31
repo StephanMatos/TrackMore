@@ -60,9 +60,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
     // Timeout for LoRa
     public static int countRED,countYellow,countBLUE,countGreen;
     public static boolean RED,GREEN,YELLOW,BLUE;
-
     private static Context mContext;
-
     private static TextView currentDistance, previousDistance, direction;
 
     @SuppressLint("WrongViewCast")
