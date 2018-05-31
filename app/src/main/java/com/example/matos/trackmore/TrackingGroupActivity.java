@@ -42,27 +42,20 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
     // google map
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private static GoogleMap mMap;
-    private final String TAG = TrackingGroupActivity.class.getSimpleName();
-    private static Location mLastKnownLocation;
     private float zoom = 17;
-    Handler h = new Handler();
-    int delay = 10 * 500;
 
     // Location markers
-    private static ArrayList<Marker> red = new ArrayList<>();
-    private static ArrayList<Marker> yellow = new ArrayList<>();
-    private static ArrayList<Marker> green = new ArrayList<>();
-    private static ArrayList<Marker> blue = new ArrayList<>();
+    private static Marker RedMarkerC, YellowMarkerC,  GreenMarkerC, BlueMarkerC;
     private static LatLng CurrentPosition, markerPosition;
     public static LocationManager lm;
     public static Location location;
-    private static boolean action;
+
+    // Distance
+    private static double RedCurrent = 0.0, RedPrev = 0.0, YellowCurrent = 0.0, YellowPrev = 0.0, GreenCurrent = 0.0, GreenPrev = 0.0, BlueCurrent = 0.0, BluePrev = 0.0;
+
     // Device ID
     private static ArrayList<String> macID = new ArrayList<>();
     private static int internalID;
-
-    // image Button
-    private ImageButton dropDownButton;
 
     // Timeout for LoRa
     public static int countRED,countYellow,countBLUE,countGreen;
@@ -71,7 +64,6 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
     private static Context mContext;
 
     private static TextView currentDistance, previousDistance, direction;
-
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -83,39 +75,8 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-
         mContext = this;
-
-        dropDownButton = findViewById(R.id.dropdownButton);
-        dropDownButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                // Create custom dialog object
-                final Dialog dialog = new Dialog(TrackingGroupActivity.this);
-                // Include dialog.xml file
-                dialog.setContentView(R.layout.dialog_group_individuel);
-
-                currentDistance = dialog.findViewById(R.id.curDis_Marker);
-                previousDistance = dialog.findViewById(R.id.preDis_Marker);
-                direction = dialog.findViewById(R.id.direction_Marker);
-
-                SetDialogTextView();
-
-                dialog.show();
-            }
-        });
     }
-
-    public static void SetDialogTextView(){
-
-        currentDistance.setText("1000");
-        previousDistance.setText("1000");
-        direction.setText("1000");
-
-    }
-
-
 
     @Override
     public void onBackPressed(){
@@ -142,19 +103,6 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
             return;
         }
 
-        // Redraws map every delay's time
-/*
-        h.postDelayed(new Runnable() {
-            public void run() {
-                if (action) {
-                    h.postDelayed(this, delay);
-                    action = false;
-                    System.out.println("redraw");
-                }
-            }
-        }, delay);
-*/
-
         // Location of device, zoom to location of device
         try{
             mMap.setMyLocationEnabled(true);
@@ -171,105 +119,72 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         new AsyncTCP().execute(Integer.valueOf('2'));
     }
 
-    private void getDeviceLocation() {
-
-        try {
-
-                Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
-                locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Location> task) {
-                        if (task.isSuccessful()) {
-                            // Set the map's camera position to the current location of the device.
-                            mLastKnownLocation = task.getResult();
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                    new LatLng(mLastKnownLocation.getLatitude(),
-                                            mLastKnownLocation.getLongitude()), zoom));
-                        } else {
-                            Log.d(TAG, "Current location is null. Using defaults.");
-                            Log.e(TAG, "Exception: %s", task.getException());
-                        }
-                    }
-                });
-
-        } catch (SecurityException e)  {
-            Log.e("Exception: %s", e.getMessage());
-        }
-    }
-
-
     public static void makeMarker(String lat, String lon, String ID){
 
         double latitude = Double.parseDouble(lat);
         double longitude = Double.parseDouble(lon);
         markerPosition = new LatLng(latitude,longitude);
 
-
         double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, markerPosition);
-        if(distance > 100000000){
+        if(distance > 1000){
             new AsyncRead().execute();
             return;
-
         }
-
             internalID = translateID(ID);
-            int size;
             count(internalID);
-            action = true;
-            System.out.println(markerPosition + ID);
+
             if (internalID == 1) {
                 RED = true;
-                final Marker redMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title("Distance to ID number "+ID+ "is :" + distance).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-
-                if (red.size() == 0) {
-                    red.add(redMarker);
-
-                } else {
-                    size = red.size();
-                    red.get(size - 1).remove();
-                    red.clear();
-                    red.add(redMarker);
+                if(RedMarkerC != null){
+                    RedMarkerC.remove();
                 }
+                RedMarkerC = mMap.addMarker(new MarkerOptions().position(markerPosition).title(String.valueOf(internalID)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                MarkerClick(RedMarkerC);
+
+                RedPrev = RedCurrent;
+                RedCurrent = distance;
+
 
             } else if (internalID == 2) {
                 YELLOW = true;
-                Marker yellowMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-                if (yellow.size() == 0) {
-                    yellow.add(yellowMarker);
-                } else {
-                    size = yellow.size();
-                    yellow.get(size - 1).remove();
-                    yellow.clear();
-                    yellow.add(yellowMarker);
+
+                if(YellowMarkerC != null){
+                    YellowMarkerC.remove();
                 }
+
+                YellowMarkerC = mMap.addMarker(new MarkerOptions().position(markerPosition).title(String.valueOf(internalID)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+                MarkerClick(YellowMarkerC);
+
+                YellowPrev = YellowCurrent;
+                YellowCurrent = distance;
 
             } else if (internalID == 3) {
                 GREEN = true;
-                Marker greenMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-                if (green.size() == 0) {
-                    green.add(greenMarker);
-                } else {
-                    size = green.size();
-                    green.get(size - 1).remove();
-                    green.clear();
-                    green.add(greenMarker);
+
+                if(GreenMarkerC != null){
+                    GreenMarkerC.remove();
                 }
+
+                GreenMarkerC = mMap.addMarker(new MarkerOptions().position(markerPosition).title(String.valueOf(internalID)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                MarkerClick(GreenMarkerC);
+
+                GreenPrev = GreenCurrent;
+                GreenCurrent = distance;
 
             } else if (internalID == 4) {
                 BLUE = true;
-                Marker blueMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-                if (blue.size() == 0) {
-                    blue.add(blueMarker);
-                } else {
-                    size = blue.size();
-                    blue.get(size - 1).remove();
-                    blue.clear();
-                    blue.add(blueMarker);
+                if(BlueMarkerC != null){
+                    BlueMarkerC.remove();
                 }
+
+                BlueMarkerC = mMap.addMarker(new MarkerOptions().position(markerPosition).title(String.valueOf(internalID)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                MarkerClick(BlueMarkerC);
+
+                BluePrev = BlueCurrent;
+                BlueCurrent = distance;
             }
 
             new AsyncRead().execute();
-
     }
 
     private static int translateID(String foreignID){
@@ -319,9 +234,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         ((Activity) mContext).finish();
     }
 
-
-    public  static void MarkerClick(Marker marker, double currentdist, double previouslydist){
-
+    public  static void MarkerClick(Marker marker){
 
         marker.setTag(markerPosition);
 
@@ -339,14 +252,33 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
                 previousDistance = dialog.findViewById(R.id.preDis_Marker);
                 direction = dialog.findViewById(R.id.direction_Marker);
 
-                SetDialogTextView();
 
+                if(marker.getTitle().equals("1")){
+                    SetDialogTextView(RedCurrent, RedPrev);
+                    System.out.println("inside equals 1");
+                } else if(marker.getTitle().equals("2")){
+                    SetDialogTextView(YellowCurrent, YellowPrev);
+                    System.out.println("inside equals 2");
+                } else if(marker.getTitle().equals("3")){
+                    SetDialogTextView(GreenCurrent, GreenPrev);
+                    System.out.println("inside equals 3");
+                }else if(marker.getTitle().equals("4")){
+                    SetDialogTextView(BlueCurrent, BluePrev);
+                    System.out.println("inside equals 3");
+                }
                 dialog.show();
-
                 return false;
             }
         });
 
+    }
+
+    public static void SetDialogTextView(double current, double prev){
+        int c = (int) current;
+        int p = (int) prev;
+        currentDistance.setText(String.valueOf(c));
+        previousDistance.setText(String.valueOf(p));
+        direction.setText(String.valueOf(c - p));
     }
 
 }
