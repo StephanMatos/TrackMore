@@ -8,4 +8,5 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_tracking_individual">Map</string>
     <string name="title_activity_tracking_group">Map</string>
+    <string name="Hello">Testing</string>
 </resources>

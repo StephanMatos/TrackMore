@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,11 +17,10 @@ import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.PopupMenu;
-import android.widget.Toast;
+import android.widget.TextView;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -33,7 +33,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
-import java.text.DecimalFormat;
+
 import java.util.ArrayList;
 
 
@@ -70,6 +70,9 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
 
     private static Context mContext;
 
+    private static TextView currentDistance, previousDistance, direction;
+
+
     @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,49 +85,37 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
 
 
         mContext = this;
+
         dropDownButton = findViewById(R.id.dropdownButton);
         dropDownButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PopupMenu popup = new PopupMenu(TrackingGroupActivity.this, dropDownButton);
 
-                // Inflating the popup using xml file
-                popup.getMenuInflater().inflate(R.menu.popup_menu_group_1device, popup.getMenu());
-                //registering popup with OnMenuItemClickListener
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
+                // Create custom dialog object
+                final Dialog dialog = new Dialog(TrackingGroupActivity.this);
+                // Include dialog.xml file
+                dialog.setContentView(R.layout.dialog_group_individuel);
 
-                        if (menuItem.getGroupId() == R.id.ShowRed && markerPosition != null) {
+                currentDistance = (TextView) dialog.findViewById(R.id.curDis_Marker);
+                previousDistance = (TextView) dialog.findViewById(R.id.preDis_Marker);
+                direction = (TextView) dialog.findViewById(R.id.direction_Marker);
 
-                            // lav testing her!
+                SetDialogTextView();
 
-                            DecimalFormat twodecimalDistance = new DecimalFormat("0.00");
-
-                            double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, markerPosition) / 1000;
-
-
-                            // laver kun en toast, dvs den forsvinder igen efter lidt tid
-
-                            Toast.makeText(TrackingGroupActivity.this, menuItem.getTitle() + " to marker: " + twodecimalDistance.format(distance) + " Km", Toast.LENGTH_LONG).show();
-
-                            // Fordi der er to "knapper" du kan finde menuen under app->res->menu->popup_menu_group_1device
-                        } else if (menuItem.getGroupId() == R.id.ShowEdit && markerPosition != null) {
-
-                            System.out.print("Speed");
-
-                        }
-
-                        return true;
-                    }
-                });
-
-                popup.show();
+                dialog.show();
             }
         });
+    }
 
+    public static void SetDialogTextView(){
+
+        currentDistance.setText("1000");
+        previousDistance.setText("1000");
+        direction.setText("1000");
 
     }
+
+
 
     @Override
     public void onBackPressed(){
@@ -213,8 +204,9 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         double longitude = Double.parseDouble(lon);
         markerPosition = new LatLng(latitude,longitude);
 
+
         double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, markerPosition);
-        if(distance > 1000){
+        if(distance > 100000000){
             new AsyncRead().execute();
             return;
 
@@ -227,7 +219,33 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
             System.out.println(markerPosition + ID);
             if (internalID == 1) {
                 RED = true;
-                Marker redMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title("Distance to ID number "+ID+ "is :" + distance).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                final Marker redMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title("Distance to ID number "+ID+ "is :" + distance).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+
+                redMarker.setTag(markerPosition);
+
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+
+                    @Override
+                    public boolean onMarkerClick(Marker redMarker) {
+
+                        // Create custom dialog object
+                        final Dialog dialog = new Dialog(mContext);
+                        // Include dialog.xml file
+                        dialog.setContentView(R.layout.dialog_group_individuel);
+
+                        currentDistance = (TextView) dialog.findViewById(R.id.curDis_Marker);
+                        previousDistance = (TextView) dialog.findViewById(R.id.preDis_Marker);
+                        direction = (TextView) dialog.findViewById(R.id.direction_Marker);
+
+                        SetDialogTextView();
+
+                        dialog.show();
+
+                       return false;
+                    }
+                });
+
+
                 if (red.size() == 0) {
                     red.add(redMarker);
 

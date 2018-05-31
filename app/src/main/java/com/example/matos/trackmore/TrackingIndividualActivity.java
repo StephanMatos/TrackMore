@@ -163,7 +163,7 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
             try {
                 URL url = new URL("https://trackmore.data.thethingsnetwork.org/#!/query/get_api_v2_query");
                 HttpsURLConnection httpsURLConnection = (HttpsURLConnection) url.openConnection();
-                HttpsURLConnection.setDefaultRequestProperty("Authorization", "ttn-account-v2.Cr9EGHQeqfyvMb0oB8gYNIwIBVJi4hPBg2i5fsYLUmI");
+                HttpsURLConnection.setDefaultRequestProperty("Accept: application/json", "Authorization: key ttn-account-v2.Cr9EGHQeqfyvMb0oB8gYNIwIBVJi4hPBg2i5fsYLUmI");
 
                 if (httpsURLConnection.getResponseCode() == 200) {
                     InputStream inputStream = httpsURLConnection.getInputStream();

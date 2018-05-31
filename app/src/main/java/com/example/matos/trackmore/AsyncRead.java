@@ -28,6 +28,7 @@ public class AsyncRead extends AsyncTask<Void,Void,String> {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
         }
         return message;
     }
