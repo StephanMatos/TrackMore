@@ -96,9 +96,9 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
                 // Include dialog.xml file
                 dialog.setContentView(R.layout.dialog_group_individuel);
 
-                currentDistance = (TextView) dialog.findViewById(R.id.curDis_Marker);
-                previousDistance = (TextView) dialog.findViewById(R.id.preDis_Marker);
-                direction = (TextView) dialog.findViewById(R.id.direction_Marker);
+                currentDistance = dialog.findViewById(R.id.curDis_Marker);
+                previousDistance = dialog.findViewById(R.id.preDis_Marker);
+                direction = dialog.findViewById(R.id.direction_Marker);
 
                 SetDialogTextView();
 
@@ -233,9 +233,9 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
                         // Include dialog.xml file
                         dialog.setContentView(R.layout.dialog_group_individuel);
 
-                        currentDistance = (TextView) dialog.findViewById(R.id.curDis_Marker);
-                        previousDistance = (TextView) dialog.findViewById(R.id.preDis_Marker);
-                        direction = (TextView) dialog.findViewById(R.id.direction_Marker);
+                        currentDistance = dialog.findViewById(R.id.curDis_Marker);
+                        previousDistance = dialog.findViewById(R.id.preDis_Marker);
+                        direction = dialog.findViewById(R.id.direction_Marker);
 
                         SetDialogTextView();
 
@@ -342,6 +342,13 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         Intent newIntent = new Intent(mContext,HomeActivity.class);
         mContext.startActivity(newIntent);
         ((Activity) mContext).finish();
+    }
+
+
+    public  static void MarkerClick(Marker marker, double currentdist, double previouslydist){
+
+
+
     }
 
 }

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/Current_Distance"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:text="Current distance" />
+
+        <TextView
+            android:id="@+id/Previous_Distance"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:text="Previous distance" />
+
+        <TextView
+            android:id="@+id/Direction"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:text="Direction" />
+
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/curDis_Marker"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+        <TextView
+        android:id="@+id/preDis_Marker"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:gravity="center" />
+
+
+        <TextView
+            android:id="@+id/direction_Marker"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+
+    </TableRow>
+
+
+</TableLayout>
