@@ -221,31 +221,6 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
                 RED = true;
                 final Marker redMarker = mMap.addMarker(new MarkerOptions().position(markerPosition).title("Distance to ID number "+ID+ "is :" + distance).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 
-                redMarker.setTag(markerPosition);
-
-                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-
-                    @Override
-                    public boolean onMarkerClick(Marker redMarker) {
-
-                        // Create custom dialog object
-                        final Dialog dialog = new Dialog(mContext);
-                        // Include dialog.xml file
-                        dialog.setContentView(R.layout.dialog_group_individuel);
-
-                        currentDistance = dialog.findViewById(R.id.curDis_Marker);
-                        previousDistance = dialog.findViewById(R.id.preDis_Marker);
-                        direction = dialog.findViewById(R.id.direction_Marker);
-
-                        SetDialogTextView();
-
-                        dialog.show();
-
-                       return false;
-                    }
-                });
-
-
                 if (red.size() == 0) {
                     red.add(redMarker);
 
@@ -348,6 +323,29 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
     public  static void MarkerClick(Marker marker, double currentdist, double previouslydist){
 
 
+        marker.setTag(markerPosition);
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+
+                // Create custom dialog object
+                final Dialog dialog = new Dialog(mContext);
+                // Include dialog.xml file
+                dialog.setContentView(R.layout.dialog_group_individuel);
+
+                currentDistance = dialog.findViewById(R.id.curDis_Marker);
+                previousDistance = dialog.findViewById(R.id.preDis_Marker);
+                direction = dialog.findViewById(R.id.direction_Marker);
+
+                SetDialogTextView();
+
+                dialog.show();
+
+                return false;
+            }
+        });
 
     }
 
