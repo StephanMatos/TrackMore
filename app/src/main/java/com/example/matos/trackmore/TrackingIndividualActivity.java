@@ -61,41 +61,6 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
 
         new HttpsGetRequest().execute();
 
-        dropDownButton = findViewById(R.id.dropdownButton);
-        dropDownButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PopupMenu popup = new PopupMenu(TrackingIndividualActivity.this, dropDownButton);
-                // Inflating the popup using xml file
-                popup.getMenuInflater().inflate(R.menu.popup_menu_individual, popup.getMenu());
-
-                //registering popup with OnMenuItemClickListener
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-
-                        if (menuItem.getGroupId() == R.id.ShowDistance && markerPosition != null  ){
-
-                            double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, markerPosition);
-
-                            if (distance < 10.00 && distance > 1.00) {
-                                DecimalFormat twodecimalDistance = new DecimalFormat("0.00");
-                                distance /= 1000;
-                                Toast.makeText(TrackingIndividualActivity.this, menuItem.getTitle() + " to marker: " + twodecimalDistance.format(distance) + " km", Toast.LENGTH_LONG).show();
-
-                            } else if (distance < 1.00){
-                                DecimalFormat onedecimalDistance = new DecimalFormat("0.0");
-                                Toast.makeText(TrackingIndividualActivity.this, menuItem.getTitle() + " to marker: " + onedecimalDistance.format(distance) + " m", Toast.LENGTH_LONG).show();
-                            }
-                        } else if (menuItem.getGroupId() == R.id.ShowDistance && markerPosition != null) {
-                            System.out.print("Speed");
-                        }
-                        return true;
-                    }
-                });
-                popup.show();
-            }
-        });
     }
 
     @Override

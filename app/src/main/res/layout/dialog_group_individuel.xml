@@ -11,6 +11,13 @@
         android:layout_height="match_parent">
 
         <TextView
+            android:id="@+id/Direction"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:text="Marker" />
+
+        <TextView
             android:id="@+id/Current_Distance"
             android:layout_width="100dp"
             android:layout_height="50dp"
@@ -24,13 +31,6 @@
             android:gravity="center"
             android:text="Previous distance" />
 
-        <TextView
-            android:id="@+id/Direction"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:gravity="center"
-            android:text="Direction" />
-
 
     </TableRow>
 
@@ -39,19 +39,91 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/curDis_Marker"
+            android:id="@+id/redMarker"
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:gravity="center" />
 
         <TextView
-            android:id="@+id/preDis_Marker"
+            android:id="@+id/curDis_redMarker"
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:gravity="center" />
 
         <TextView
-            android:id="@+id/direction_Marker"
+            android:id="@+id/preDis_redMarker"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/yellowMarker"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/curDis_yellowMarker"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/preDis_yellowMarker"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/greenMarker"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/curDis_greenMarker"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/preDis_greenMarker"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/blueMarker"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/curDis_blueMarker"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/preDis_blueMarker"
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:gravity="center" />

@@ -11,18 +11,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -34,6 +27,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
 
+import java.io.BufferedReader;
 import java.util.ArrayList;
 
 
@@ -52,7 +46,10 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
 
     // Distance
     private static double RedCurrent = 0.0, RedPrev = 0.0, YellowCurrent = 0.0, YellowPrev = 0.0, GreenCurrent = 0.0, GreenPrev = 0.0, BlueCurrent = 0.0, BluePrev = 0.0;
-    private static TextView currentDistance, previousDistance, direction;
+    private static TextView RedcurrentDistance, RedpreviousDistance, RedMarker,
+            YellowcurrentDistance, YellowpreviousDistance, YellowMarker,
+            GreencurrentDistance, GreenpreviousDistance, GreenMarker,
+            BluecurrentDistance, BluepreviousDistance, BlueMarker;
 
     // Device ID
     private static ArrayList<String> macID = new ArrayList<>();
@@ -247,23 +244,46 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
                 // Include dialog.xml file
                 dialog.setContentView(R.layout.dialog_group_individuel);
 
-                currentDistance = dialog.findViewById(R.id.curDis_Marker);
-                previousDistance = dialog.findViewById(R.id.preDis_Marker);
-                direction = dialog.findViewById(R.id.direction_Marker);
+                RedcurrentDistance = dialog.findViewById(R.id.curDis_redMarker);
+                RedpreviousDistance = dialog.findViewById(R.id.preDis_redMarker);
+                RedMarker = dialog.findViewById(R.id.redMarker);
 
+                YellowcurrentDistance = dialog.findViewById(R.id.curDis_yellowMarker);
+                YellowpreviousDistance = dialog.findViewById(R.id.preDis_yellowMarker);
+                YellowMarker = dialog.findViewById(R.id.yellowMarker);
 
-                if(marker.getTitle().equals("1")){
-                    SetDialogTextView(RedCurrent, RedPrev);
-                    System.out.println("inside equals 1");
-                } else if(marker.getTitle().equals("2")){
-                    SetDialogTextView(YellowCurrent, YellowPrev);
-                    System.out.println("inside equals 2");
-                } else if(marker.getTitle().equals("3")){
-                    SetDialogTextView(GreenCurrent, GreenPrev);
-                    System.out.println("inside equals 3");
-                }else if(marker.getTitle().equals("4")){
-                    SetDialogTextView(BlueCurrent, BluePrev);
-                    System.out.println("inside equals 3");
+                GreencurrentDistance = dialog.findViewById(R.id.curDis_greenMarker);
+                GreenpreviousDistance = dialog.findViewById(R.id.preDis_greenMarker);
+                GreenMarker = dialog.findViewById(R.id.greenMarker);
+
+                BluecurrentDistance = dialog.findViewById(R.id.curDis_blueMarker);
+                BluepreviousDistance = dialog.findViewById(R.id.preDis_blueMarker);
+                BlueMarker = dialog.findViewById(R.id.blueMarker);
+
+                if(RED){
+                    int c = (int) RedCurrent;
+                    int p = (int) RedPrev;
+                    RedcurrentDistance.setText(String.valueOf(c));
+                    RedpreviousDistance.setText(String.valueOf(p));
+                    RedMarker.setText("Red");
+                } if(YELLOW){
+                    int c = (int) YellowCurrent;
+                    int p = (int) YellowPrev;
+                    YellowcurrentDistance.setText(String.valueOf(c));
+                    YellowpreviousDistance.setText(String.valueOf(p));
+                    YellowMarker.setText("Yellow");
+                } if(GREEN){
+                    int c = (int) GreenCurrent;
+                    int p = (int) GreenPrev;
+                    GreencurrentDistance.setText(String.valueOf(c));
+                    GreenpreviousDistance.setText(String.valueOf(p));
+                    GreenMarker.setText("Green");
+                } if(BLUE){
+                    int c = (int) YellowCurrent;
+                    int p = (int) YellowPrev;
+                    BluecurrentDistance.setText(String.valueOf(c));
+                    BluepreviousDistance.setText(String.valueOf(p));
+                    BlueMarker.setText("Blue");
                 }
                 dialog.show();
                 return false;
@@ -272,12 +292,5 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
 
     }
 
-    public static void SetDialogTextView(double current, double prev){
-        int c = (int) current;
-        int p = (int) prev;
-        currentDistance.setText(String.valueOf(c));
-        previousDistance.setText(String.valueOf(p));
-        direction.setText(String.valueOf(c - p));
-    }
 
 }
