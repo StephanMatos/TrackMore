@@ -178,6 +178,22 @@ public class TrackingSportActivity extends AppCompatActivity {
        double X_Cordinate = position.longitude;
        double Y_Cordinate = position.latitude;
 
+
+       // Check if the coordinates is negative, then multiply with -1
+        if (MaxCordinateX < 0){
+            MaxCordinateX *= -1;
+        }if (MaxCordinateY < 0) {
+            MaxCordinateY *= -1;
+        }if (OrigoX < 0) {
+            OrigoX *=-1;
+        }if (OrigoY < 0) {
+            OrigoY *= -1;
+        }if (X_Cordinate < 0) {
+            X_Cordinate *= -1;
+        }if (Y_Cordinate < 0) {
+            Y_Cordinate *= -1;
+        }
+
        SizeRatioY = maxDpY/MaxCordinateY;
        SizeRatioX = maxDpX/MaxCordinateX;
 
