@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
@@ -7,6 +8,13 @@
     <TableRow
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/player"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:text="Player" />
 
         <TextView
             android:id="@+id/Total_distance"
@@ -27,7 +35,7 @@
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:gravity="center"
-            android:text="Highest speed" />
+            android:text="top speed" />
 
 
     </TableRow>
@@ -36,25 +44,101 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ImageView
+            android:id="@+id/Redplayer"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            app:srcCompat="@drawable/redfootballtop" />
+
         <TextView
-            android:id="@+id/totDis_Marker"
+            android:id="@+id/avgspeed_Marker1"
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:gravity="center" />
 
         <TextView
-            android:id="@+id/avgspeed_Marker"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:gravity="center" />
-
-        <TextView
-            android:id="@+id/highspeed_Marker"
+            android:id="@+id/highspeed_Marker1"
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:gravity="center" />
 
     </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/Yellowplayer"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            app:srcCompat="@drawable/yellowfootballtop" />
+
+        <TextView
+            android:id="@+id/avgspeed_Marker2"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/highspeed_Marker2"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+    </TableRow>
+
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/Greenplayer"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            app:srcCompat="@drawable/greenfootballtop" />
+
+        <TextView
+            android:id="@+id/avgspeed_Marker3"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/highspeed_Marker3"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+    </TableRow>
+
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/Blueplayer"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            app:srcCompat="@drawable/bluefootballtop" />
+
+        <TextView
+            android:id="@+id/avgspeed_Marker4"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/highspeed_Marker4"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+    </TableRow>
+
+
 
 
 </TableLayout>
