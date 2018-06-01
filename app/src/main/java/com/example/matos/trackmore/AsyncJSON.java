@@ -41,10 +41,10 @@ public class AsyncJSON extends AsyncTask<String, String, String[]> {
         String lon = strings[1];
         String ID = strings[2];
         String sys = strings[3];
-            System.out.println(sys);
+        System.out.println(sys);
 
             if(sys.equals("2")) {
-                TrackingGroupActivity.makeMarker(lat,lon,ID);
+                TrackingGroupActivity.makeMarker(lat,lon,ID,false);
 
             } else if(sys.equals("3")){
                 TrackingSportActivity.addPosition(lat,lon,ID);

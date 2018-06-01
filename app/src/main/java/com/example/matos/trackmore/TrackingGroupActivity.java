@@ -15,7 +15,6 @@ import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,9 +26,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
 
-import java.io.BufferedReader;
 import java.util.ArrayList;
-
 
 public class TrackingGroupActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -115,7 +112,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         new AsyncTCP().execute(Integer.valueOf('2'));
     }
 
-    public static void makeMarker(String lat, String lon, String ID){
+    public static void makeMarker(String lat, String lon, String ID, boolean LoRa){
 
         double latitude = Double.parseDouble(lat);
         double longitude = Double.parseDouble(lon);
@@ -127,7 +124,10 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
             return;
         }
             internalID = translateID(ID);
-            count(internalID);
+            if(!LoRa){
+                count(internalID, LoRa);
+            }
+
 
             if (internalID == 1) {
                 RED = true;
@@ -194,23 +194,23 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         return internalID;
     }
 
-    private static void count(int id){
-        if(id == 1){
+    private static void count(int id, boolean LoRa){
+        if(id == 1 && !LoRa){
             countRED = 0;
             countYellow++;
             countGreen++;
             countBLUE++;
-        }else if( id == 2){
+        }else if( id == 2 && !LoRa){
             countRED++;
             countYellow = 0;
             countGreen++;
             countBLUE++;
-        }else if (id == 3){
+        }else if (id == 3 && !LoRa){
             countRED++;
             countYellow++;
             countGreen = 0;
             countBLUE++;
-        }else if (id == 4){
+        }else if (id == 4 && !LoRa){
             countRED++;
             countYellow++;
             countGreen++;
@@ -218,7 +218,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         }
 
         if(countRED > 10 && RED || countYellow > 10 && YELLOW || countGreen > 10 && GREEN || countBLUE > 10 && BLUE){
-            // do Lora
+            new AsyncGETLoRa().execute("function2","not first run");
 
         }
 
@@ -230,7 +230,7 @@ public class TrackingGroupActivity extends AppCompatActivity implements OnMapRea
         ((Activity) mContext).finish();
     }
 
-    public static void MarkerClick(Marker marker){
+    public  static void MarkerClick(Marker marker){
 
         marker.setTag(markerPosition);
 

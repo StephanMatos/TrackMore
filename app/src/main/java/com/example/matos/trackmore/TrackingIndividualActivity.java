@@ -2,49 +2,35 @@ package com.example.matos.trackmore;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.AsyncTask;
-import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.util.JsonReader;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.PopupMenu;
-import android.widget.Toast;
+import android.widget.TextView;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.DecimalFormat;
-import javax.net.ssl.HttpsURLConnection;
 
 public class TrackingIndividualActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    GoogleMap mMap;
-    LatLng CurrentPosition;
-    LatLng markerPosition;
-    Handler h = new Handler();
-    int delay = 10 * 500;
-    private ImageButton dropDownButton;
-    static Network network = Network.getInstance();
-    private static boolean action;
-    String httpsValue = "";
+    private static Marker RedMarkerC;
+    static GoogleMap mMap;
+    private static LatLng CurrentPosition, markerPosition;
+    private static double RedCurrent = 0.0, RedPrev = 0.0;
+    private static TextView RedcurrentDistance, RedpreviousDistance, RedMarker;
+    private static Context mContext;
 
 
     @SuppressLint("WrongViewCast")
@@ -56,113 +42,82 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        mContext = this;
 
-        //new tcp().execute();
 
-        new HttpsGetRequest().execute();
-
+        new AsyncGETLoRa().execute("function1", "FirstRun");
     }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        System.out.println(mMap);
-        System.out.println(googleMap);
-        System.out.println("null ???? ");
         float zoom = 13;
 
         // Android needs to peform this check, otherwise location will not be shown
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        // Redraws map every delay's time
-        h.postDelayed(new Runnable(){
-            public void run(){
-                if(action){
-                    h.postDelayed(this, delay);
-                }
-                action = false;
-            }
-        }, delay);
 
         // Location of device, zoom to location of device
         mMap.setMyLocationEnabled(true);
         LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        System.out.println(location.getLatitude() + "blalallaalalal" + location.getLongitude());
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         CurrentPosition = latLng;
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
 
-    public static class tcp extends AsyncTask<Void, Void, Void> {
+    public static void makeMarker(String ID,String lat, String lon){
+        double latitude = Double.parseDouble(lat);
+        double longitude = Double.parseDouble(lon);
+        markerPosition = new LatLng(latitude,longitude);
 
-        protected Void doInBackground(Void... params) {
+        double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, markerPosition);
 
-            while(!network.Init()){
-                System.out.println("inside loop tcp");
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            PrintWriter pw = network.getPw();
-            System.out.println(pw);
-            if(pw != null){
-                pw.println("{\"ID\":0,\"SYSTEM\":9,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
-                pw.println("{\"ID\":0,\"SYSTEM\":1,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
-                pw.flush();
-            }
-            return null;
+        if(RedMarkerC != null){
+            RedMarkerC.remove();
         }
+        RedMarkerC = mMap.addMarker(new MarkerOptions().position(markerPosition).title("Device 1").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+        MarkerClick(RedMarkerC);
+
+        RedPrev = RedCurrent;
+        RedCurrent = distance;
+
+    }
+    public  static void MarkerClick(Marker marker){
+
+        marker.setTag(markerPosition);
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+
+                // Create custom dialog object
+                final Dialog dialog = new Dialog(mContext);
+                // Include dialog.xml file
+                dialog.setContentView(R.layout.dialog_group_individuel);
+
+                RedcurrentDistance = dialog.findViewById(R.id.curDis_redMarker);
+                RedpreviousDistance = dialog.findViewById(R.id.preDis_redMarker);
+                RedMarker = dialog.findViewById(R.id.redMarker);
+
+                    int c = (int) RedCurrent;
+                    int p = (int) RedPrev;
+                    RedcurrentDistance.setText(String.valueOf(c));
+                    RedpreviousDistance.setText(String.valueOf(p));
+                    RedMarker.setText("Red");
+
+                dialog.show();
+                return false;
+            }
+        });
+
+        System.out.println("run is over");
+        new AsyncGETLoRa().execute("function1", "Not first run");
+
+
     }
 
-    // Access the LoRa data through http-request
-    public class HttpsGetRequest extends AsyncTask<Void, Void ,Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            try {
-                URL url = new URL("https://trackmore.data.thethingsnetwork.org/#!/query/get_api_v2_query");
-                HttpsURLConnection httpsURLConnection = (HttpsURLConnection) url.openConnection();
-                HttpsURLConnection.setDefaultRequestProperty("Accept: application/json", "Authorization: key ttn-account-v2.Cr9EGHQeqfyvMb0oB8gYNIwIBVJi4hPBg2i5fsYLUmI");
-
-                if (httpsURLConnection.getResponseCode() == 200) {
-                    InputStream inputStream = httpsURLConnection.getInputStream();
-                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
-                    BufferedReader bir = new BufferedReader(inputStreamReader);
-
-                    String str;
-                    while ((str = bir.readLine()) != null) {
-                        System.out.println(str);
-                    }
-
-                } else {
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    System.out.println("Could not fetch data from https");
-                    new HttpsGetRequest().execute();
-                }
-
-
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-        }
-    }
 }
