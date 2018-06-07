@@ -2,8 +2,12 @@ package com.example.matos.trackmore;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -23,7 +27,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
 
 
-public class TrackingIndividualActivity extends FragmentActivity implements OnMapReadyCallback {
+public class trackingIndividualActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private static Marker RedMarkerC;
     static GoogleMap mMap;
@@ -44,8 +48,8 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         mapFragment.getMapAsync(this);
         mContext = this;
 
-
-        new AsyncGETLoRa().execute("function1", "FirstRun");
+        //new asyncTCP().execute(Integer.valueOf('1'));
+        new asyncGETLoRa().execute("function1");
     }
 
 
@@ -78,14 +82,18 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         if(RedMarkerC != null){
             RedMarkerC.remove();
         }
-        RedMarkerC = mMap.addMarker(new MarkerOptions().position(markerPosition).title("Device 1").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-        MarkerClick(RedMarkerC);
+        RedMarkerC = mMap.addMarker(new MarkerOptions().position(markerPosition).title(ID).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 
         RedPrev = RedCurrent;
         RedCurrent = distance;
 
+        markerClick(RedMarkerC);
+
+
+
     }
-    public  static void MarkerClick(Marker marker){
+
+    public  static void markerClick(Marker marker){
 
         marker.setTag(markerPosition);
 
@@ -115,8 +123,28 @@ public class TrackingIndividualActivity extends FragmentActivity implements OnMa
         });
 
         System.out.println("run is over");
-        new AsyncGETLoRa().execute("function1", "Not first run");
+        new asyncGETLoRa().execute("function1");
 
+    }
+
+    public static void stop(){
+        Intent newIntent = new Intent(mContext,HomeActivity.class);
+        mContext.startActivity(newIntent);
+        ((Activity) mContext).finish();
+    }
+    @Override
+    public void onBackPressed(){
+        new AlertDialog.Builder(this)
+                .setTitle("EXIT")
+                .setMessage("Exit will delete data and end connection")
+                .setNegativeButton(android.R.string.no, null)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        trackingIndividualActivity.super.onBackPressed();
+
+                    }
+                }).create().show();
 
     }
 

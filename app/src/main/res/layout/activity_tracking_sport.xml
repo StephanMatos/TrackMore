@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/soccerfield"
-    tools:context="com.example.matos.trackmore.TrackingSportActivity">
+    tools:context="com.example.matos.trackmore.trackingSportActivity">
 
     <ImageButton
         android:id="@+id/topleftcorner"

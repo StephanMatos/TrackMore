@@ -1,10 +1,11 @@
 package com.example.matos.trackmore;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -15,15 +16,9 @@ import android.widget.ImageView;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.SphericalUtil;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 
-public class TrackingSportActivity extends AppCompatActivity {
+public class trackingSportActivity extends AppCompatActivity {
 
     private static ArrayList<LatLng> red = new ArrayList<>();
     private static ArrayList<LatLng> yellow = new ArrayList<>();
@@ -43,6 +38,8 @@ public class TrackingSportActivity extends AppCompatActivity {
     static boolean secondclick = false;
     static int toprightclick = 0;
 
+    private static Context mContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,13 +54,15 @@ public class TrackingSportActivity extends AppCompatActivity {
         yellowtop = findViewById(R.id.YellowShirt);
         greentop = findViewById(R.id.GreenShirt);
 
+        mContext = this;
+
         topleftcorner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 topleftcorner.setVisibility(View.GONE);
                 toprightcorner.setVisibility(View.GONE);
                 lowleftcorner.setVisibility(View.GONE);
-                if (firstclick == false){
+                if (!firstclick){
                     firstclick = true;
                 } else {
                     secondclick = true;
@@ -108,7 +107,7 @@ public class TrackingSportActivity extends AppCompatActivity {
                 toprightcorner.setVisibility(View.GONE);
                 lowleftcorner.setVisibility(View.GONE);
                 lowrightcorner.setVisibility(View.GONE);
-                if (firstclick == false){
+                if (!firstclick){
                     firstclick = true;
                 }
                 GetOwnLocation();
@@ -229,7 +228,7 @@ public class TrackingSportActivity extends AppCompatActivity {
 
         double distance = SphericalUtil.computeDistanceBetween(Origo, position);
         if(distance > 1000){
-            new AsyncRead().execute();
+            new asyncRead().execute();
             return;
         }
         internalID = translateID(ID);
@@ -262,5 +261,11 @@ public class TrackingSportActivity extends AppCompatActivity {
             internalID = macID.indexOf(foreignID)+1;
         }
         return internalID;
+    }
+
+    public static void stop(){
+        Intent newIntent = new Intent(mContext,HomeActivity.class);
+        mContext.startActivity(newIntent);
+        ((Activity) mContext).finish();
     }
 }

@@ -1,26 +1,12 @@
 package com.example.matos.trackmore;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
-import android.net.*;
-import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,9 +15,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.io.IOException;
 
 public class HomeActivity extends AppCompatActivity{
 
@@ -97,10 +80,6 @@ public class HomeActivity extends AppCompatActivity{
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1
                 );
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
             }
         }
 
@@ -109,17 +88,17 @@ public class HomeActivity extends AppCompatActivity{
 
 
     public void IndividualActivity() throws InterruptedException {
-        Intent intent =  new Intent(this, TrackingIndividualActivity.class);
+        Intent intent =  new Intent(this, trackingIndividualActivity.class);
         startActivity(intent);
     }
 
     public void GroupActivity() {
-        Intent intent =  new Intent(this, TrackingGroupActivity.class);
+        Intent intent =  new Intent(this, trackingGroupActivity.class);
         startActivity(intent);
     }
 
     public void SportActivity() {
-        Intent intent =  new Intent(this, TrackingSportActivity.class);
+        Intent intent =  new Intent(this, trackingSportActivity.class);
         startActivity(intent);
     }
 

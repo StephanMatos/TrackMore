@@ -1,14 +1,12 @@
 package com.example.matos.trackmore;
 
 import android.app.Application;
-import android.os.AsyncTask;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.NoRouteToHostException;
 import java.net.Socket;
 
 
@@ -20,7 +18,7 @@ public class Network extends Application {
     private static InputStreamReader inputStreamReader;
     private static BufferedReader bir;
     private static PrintWriter pw;
-    private boolean succes = true;
+    private boolean succes;
 
     public Network(){
 

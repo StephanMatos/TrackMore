@@ -7,12 +7,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
-public class AsyncGETLoRa extends AsyncTask<String,Void,String[]>{
+public class asyncGETLoRa extends AsyncTask<String,Void,String[]>{
 
 
 
@@ -20,18 +18,17 @@ public class AsyncGETLoRa extends AsyncTask<String,Void,String[]>{
     protected String[] doInBackground(String... strings) {
 
         System.out.println("begin");
-        if(!strings[1].equals("FirstRun")){
+
             try {
                 Thread.sleep(60000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
+
         String data ="";
         String ID = "";
         String lat = "";
         String lon = "";
-        String sys = "";
         String coded;
         String decoded;
 
@@ -54,7 +51,7 @@ public class AsyncGETLoRa extends AsyncTask<String,Void,String[]>{
             coded = json.getString("payload_raw");
 
             // Decodes raw payload
-            byte[] valueDecoded= new byte[0];
+            byte[] valueDecoded;
             valueDecoded = Base64.decode(coded.getBytes("UTF-8"), Base64.DEFAULT);
             decoded = new String(valueDecoded);
 
@@ -72,7 +69,7 @@ public class AsyncGETLoRa extends AsyncTask<String,Void,String[]>{
 
 
 
-        String[] finalstrings ={strings[0],ID,lat,lon};
+        String[] finalstrings = {strings[0],ID,lat,lon};
         return finalstrings;
     }
 
@@ -81,11 +78,14 @@ public class AsyncGETLoRa extends AsyncTask<String,Void,String[]>{
         System.out.println(s[0] + "   " + s[1] + "    " + s[2] + "     "  + s[3]);
         if(s[0].equals("function1")){
             System.out.println("in 1");
-            TrackingIndividualActivity.makeMarker(s[1],s[2],s[3]);
+            trackingIndividualActivity.makeMarker(s[1],s[2],s[3]);
         }else if (s[0].equals("function1")){
             System.out.println("in 2 ");
-            TrackingGroupActivity.makeMarker(s[2],s[3],s[1],true);
+            trackingGroupActivity.makeMarker(s[2],s[3],s[1],true);
 
+        } else{
+
+            new asyncGETLoRa().execute();
         }
 
 

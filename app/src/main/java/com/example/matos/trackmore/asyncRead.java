@@ -3,7 +3,7 @@ import android.os.AsyncTask;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-public class AsyncRead extends AsyncTask<Void,Void,String> {
+public class asyncRead extends AsyncTask<Void,Void,String> {
     @Override
     protected String doInBackground(Void... Voids) {
 
@@ -23,7 +23,7 @@ public class AsyncRead extends AsyncTask<Void,Void,String> {
         System.out.println("Message is : "+message);
         if(message == null){
             try {
-                Thread.sleep(1000);
+                Thread.sleep(5000);
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -37,9 +37,9 @@ public class AsyncRead extends AsyncTask<Void,Void,String> {
         System.out.println("on post");
 
         if(strings == null){
-            new AsyncRead().execute();
+            new asyncRead().execute();
         }else{
-            new AsyncJSON().execute(strings);
+            new asyncJSON().execute(strings);
         }
         System.out.println("End of read");
     }

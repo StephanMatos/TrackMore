@@ -1,16 +1,15 @@
 package com.example.matos.trackmore;
 
-import android.app.Dialog;
 import android.os.AsyncTask;
 
 
 import java.io.PrintWriter;
 
 
-public class AsyncTCP extends AsyncTask<Integer,Void,Void>{
-    Network network = Network.getInstance();
+public class asyncTCP extends AsyncTask<Integer,Void,Integer>{
+    private Network network = Network.getInstance();
 
-    protected Void doInBackground(Integer... integers) {
+    protected Integer doInBackground(Integer... integers) {
             int retry = 0;
                 while(!network.Init()){
                     System.out.println("inside loop tcp");
@@ -19,8 +18,14 @@ public class AsyncTCP extends AsyncTask<Integer,Void,Void>{
                     }catch (InterruptedException e){
                         e.printStackTrace();
                     }
-                    if(retry> 2){
-                        TrackingGroupActivity.stop();
+                    if(retry> 3){
+                        if(integers[0] == '1'){
+                          trackingIndividualActivity.stop();
+                        } else if(integers[0] == '2'){
+                          trackingGroupActivity.stop();
+                        } else if (integers[0] == '3'){
+                            trackingSportActivity.stop();
+                        }
                         break;
                     }
                     retry++;
@@ -31,13 +36,13 @@ public class AsyncTCP extends AsyncTask<Integer,Void,Void>{
             PrintWriter pw = network.getPw();
             System.out.println(pw);
             if(pw != null){
-                pw.println("{\"ID\":0,\"SYSTEM\":9,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
+                pw.println("{\"SYSTEM\":9}");
                 if(integers[0] == '1'){
-                    pw.println("{\"ID\":0,\"SYSTEM\":1,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
+                    pw.println("{\"SYSTEM\":1}");
                 } else if(integers[0] == '2'){
-                    pw.println("{\"ID\":0,\"SYSTEM\":2,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
+                    pw.println("{\"SYSTEM\":2}");
                 } else if (integers[0] == '3'){
-                    pw.println("{\"ID\":0,\"SYSTEM\":3,\"RSSI\":0,\"NumberOfStations\":0,\"LATITUDE\":0,\"LONGITUDE\":0}");
+                    pw.println("{\"SYSTEM\":3");
                 }
 
                 pw.flush();
@@ -47,11 +52,18 @@ public class AsyncTCP extends AsyncTask<Integer,Void,Void>{
 
             }
 
-          return null;
+          return integers[0];
         }
 
     @Override
-    protected void onPostExecute(Void Void) {
-            new AsyncRead().execute();
+    protected void onPostExecute(Integer integer) {
+
+            if(integer == 1){
+
+            }else{
+                new asyncRead().execute();
+            }
+
+
     }
 }

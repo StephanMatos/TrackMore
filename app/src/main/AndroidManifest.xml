@@ -36,7 +36,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".HomeActivity" />
-        <activity android:name=".TrackingSportActivity" />
+        <activity android:name=".trackingSportActivity" />
         <service android:name="org.eclipse.paho.android.service.MqttService" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -51,10 +51,10 @@
             android:value="AIzaSyDLs00tqIA7SG9XpCUx-KvBU3HCUktnodM"/>
 
         <activity
-            android:name=".TrackingIndividualActivity"
+            android:name=".trackingIndividualActivity"
             android:label="@string/title_activity_tracking_individual" />
         <activity
-            android:name=".TrackingGroupActivity"
+            android:name=".trackingGroupActivity"
             android:label="@string/title_activity_tracking_group"></activity>
     </application>
 
