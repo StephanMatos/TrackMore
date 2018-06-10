@@ -8,6 +8,20 @@
     tools:context="com.example.matos.trackmore.trackingSportActivity">
 
     <ImageButton
+        android:id="@+id/dropdownButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/GreenShirt"
+        android:layout_gravity="left|center"
+        android:background="@android:color/transparent"
+        android:backgroundTint="@android:color/transparent"
+        android:padding="10dp"
+        android:paddingRight="10dp"
+        android:visibility="invisible"
+        android:src="@android:drawable/ic_menu_sort_by_size" />
+
+    <ImageButton
         android:id="@+id/topleftcorner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

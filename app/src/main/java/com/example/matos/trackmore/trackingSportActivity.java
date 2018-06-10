@@ -27,7 +27,7 @@ public class trackingSportActivity extends AppCompatActivity {
     private static ArrayList<String> macID = new ArrayList<>();
 
     private ImageButton topleftcorner, lowleftcorner, toprightcorner, lowrightcorner;
-    private static ImageView bluetop,redtop, yellowtop, greentop;
+    private static ImageView bluetop,redtop, yellowtop, greentop, dropdownmenu;
     private static LatLng firstcorner, secondcorner, Origo, MaxCordinates, position;
 
     static int  maxDpY, maxDpX;
@@ -49,6 +49,8 @@ public class trackingSportActivity extends AppCompatActivity {
         lowleftcorner = findViewById(R.id.lowleftcorner);
         toprightcorner = findViewById(R.id.toprightcorner);
         lowrightcorner = findViewById(R.id.lowrightcorner);
+        dropdownmenu = findViewById(R.id.dropdownButton);
+
         bluetop = findViewById(R.id.BlueShirt);
         redtop = findViewById(R.id.RedShirt);
         yellowtop = findViewById(R.id.YellowShirt);
@@ -128,6 +130,7 @@ public class trackingSportActivity extends AppCompatActivity {
         } else {
             secondcorner = latlng;
             System.out.println("Secondcorner: " + secondcorner);
+            dropdownmenu.setVisibility(View.VISIBLE);
             CalFieldPixels();
         }
     }
