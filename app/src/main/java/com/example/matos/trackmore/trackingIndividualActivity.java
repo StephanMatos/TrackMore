@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -35,6 +36,12 @@ public class trackingIndividualActivity extends FragmentActivity implements OnMa
     private static double RedCurrent = 0.0, RedPrev = 0.0;
     private static TextView RedcurrentDistance, RedpreviousDistance, RedMarker;
     private static Context mContext;
+    LocationManager lm;
+    Location location;
+    LatLng latLng;
+    Handler h = new Handler();
+    int delay = 30000;
+    float zoom;
 
 
     @SuppressLint("WrongViewCast")
@@ -56,23 +63,39 @@ public class trackingIndividualActivity extends FragmentActivity implements OnMa
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        float zoom = 13;
+        zoom = 11;
 
         // Android needs to peform this check, otherwise location will not be shown
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
 
+
+        h.postDelayed(new Runnable(){
+            @SuppressLint("MissingPermission")
+            public void run(){
+
+                h.postDelayed(this, delay);
+                lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+                location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                CurrentPosition = latLng;
+                System.out.println("redraw");
+            }
+        }, delay);
+
+
         // Location of device, zoom to location of device
         mMap.setMyLocationEnabled(true);
-        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        latLng = new LatLng(location.getLatitude(), location.getLongitude());
         CurrentPosition = latLng;
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
 
     public static void makeMarker(String ID,String lat, String lon){
+
         double latitude = Double.parseDouble(lat);
         double longitude = Double.parseDouble(lon);
         markerPosition = new LatLng(latitude,longitude);
@@ -113,8 +136,8 @@ public class trackingIndividualActivity extends FragmentActivity implements OnMa
 
                     int c = (int) RedCurrent;
                     int p = (int) RedPrev;
-                    RedcurrentDistance.setText(String.valueOf(c));
-                    RedpreviousDistance.setText(String.valueOf(p));
+                    RedcurrentDistance.setText(String.valueOf(c) + " meter");
+                    RedpreviousDistance.setText(String.valueOf(p)+ " meter");
                     RedMarker.setText("Red");
 
                 dialog.show();

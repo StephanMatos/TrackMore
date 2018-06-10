@@ -11,10 +11,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -38,8 +41,6 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
     // Location markers
     private static Marker RedMarkerC, YellowMarkerC,  GreenMarkerC, BlueMarkerC;
     private static LatLng CurrentPosition, markerPosition;
-    public static LocationManager lm;
-    public static Location location;
 
     // Distance
     private static double RedCurrent = 0.0, RedPrev = 0.0, YellowCurrent = 0.0, YellowPrev = 0.0, GreenCurrent = 0.0, GreenPrev = 0.0, BlueCurrent = 0.0, BluePrev = 0.0;
@@ -47,6 +48,10 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
             YellowcurrentDistance, YellowpreviousDistance, YellowMarker,
             GreencurrentDistance, GreenpreviousDistance, GreenMarker,
             BluecurrentDistance, BluepreviousDistance, BlueMarker;
+
+    LocationManager lm;
+    Location location;
+    LatLng latLng;
 
     // Device ID
     private static ArrayList<String> macID = new ArrayList<>();
@@ -56,6 +61,10 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
     public static int countRED,countYellow,countBLUE,countGreen;
     public static boolean RED,GREEN,YELLOW,BLUE;
     private static Context mContext;
+
+    // handler
+    Handler h = new Handler();
+    int delay = 5000;
 
 
     @SuppressLint("WrongViewCast")
@@ -97,18 +106,30 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
             return;
         }
 
+        h.postDelayed(new Runnable(){
+            @SuppressLint("MissingPermission")
+            public void run(){
+
+                h.postDelayed(this, delay);
+                lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+                location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                CurrentPosition = latLng;
+                System.out.println("redraw");
+            }
+        }, delay);
+
         // Location of device, zoom to location of device
         try{
             mMap.setMyLocationEnabled(true);
             lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            latLng = new LatLng(location.getLatitude(), location.getLongitude());
             CurrentPosition = latLng;
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
         } catch (NullPointerException e){
             e.printStackTrace();
         }
-
     }
 
     public static void makeMarker(String lat, String lon, String ID, boolean LoRa){
@@ -125,6 +146,8 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
             internalID = translateID(ID);
             if(!LoRa){
                 count(internalID, LoRa);
+            } else{
+                Toast.makeText(mContext, internalID + "is currently not connected to WiFi", Toast.LENGTH_SHORT).show();
             }
 
 
@@ -265,26 +288,26 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
                 if(RED){
                     int c = (int) RedCurrent;
                     int p = (int) RedPrev;
-                    RedcurrentDistance.setText(String.valueOf(c));
-                    RedpreviousDistance.setText(String.valueOf(p));
+                    RedcurrentDistance.setText(String.valueOf(c) + " meter");
+                    RedpreviousDistance.setText(String.valueOf(p)+ " meter");
                     RedMarker.setText("Red");
                 } if(YELLOW){
                     int c = (int) YellowCurrent;
                     int p = (int) YellowPrev;
-                    YellowcurrentDistance.setText(String.valueOf(c));
-                    YellowpreviousDistance.setText(String.valueOf(p));
+                    YellowcurrentDistance.setText(String.valueOf(c)+ " meter");
+                    YellowpreviousDistance.setText(String.valueOf(p)+ " meter");
                     YellowMarker.setText("Yellow");
                 } if(GREEN){
                     int c = (int) GreenCurrent;
                     int p = (int) GreenPrev;
-                    GreencurrentDistance.setText(String.valueOf(c));
-                    GreenpreviousDistance.setText(String.valueOf(p));
+                    GreencurrentDistance.setText(String.valueOf(c)+ " meter");
+                    GreenpreviousDistance.setText(String.valueOf(p)+ " meter");
                     GreenMarker.setText("Green");
                 } if(BLUE){
                     int c = (int) YellowCurrent;
                     int p = (int) YellowPrev;
-                    BluecurrentDistance.setText(String.valueOf(c));
-                    BluepreviousDistance.setText(String.valueOf(p));
+                    BluecurrentDistance.setText(String.valueOf(c)+ " meter");
+                    BluepreviousDistance.setText(String.valueOf(p)+ " meter");
                     BlueMarker.setText("Blue");
                 }
                 dialog.show();

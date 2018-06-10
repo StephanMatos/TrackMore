@@ -14,11 +14,11 @@ public class asyncTCP extends AsyncTask<Integer,Void,Integer>{
                 while(!network.Init()){
                     System.out.println("inside loop tcp");
                     try {
-                    Thread.sleep(10000);
+                    Thread.sleep(5000);
                     }catch (InterruptedException e){
                         e.printStackTrace();
                     }
-                    if(retry> 3){
+                    if(retry > 3){
                         if(integers[0] == '1'){
                           trackingIndividualActivity.stop();
                         } else if(integers[0] == '2'){

@@ -85,7 +85,7 @@ public class asyncGETLoRa extends AsyncTask<String,Void,String[]>{
 
         } else{
 
-            new asyncGETLoRa().execute();
+            new asyncGETLoRa().execute(s[0]);
         }
 
 
