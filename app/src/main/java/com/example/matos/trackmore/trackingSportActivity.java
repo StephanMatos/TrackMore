@@ -1,9 +1,7 @@
 package com.example.matos.trackmore;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.v7.app.AppCompatActivity;
@@ -18,7 +16,7 @@ import com.google.maps.android.SphericalUtil;
 
 import java.util.ArrayList;
 
-public class trackingSportActivity extends AppCompatActivity {
+public class TrackingSportActivity extends AppCompatActivity {
 
     private static ArrayList<LatLng> red = new ArrayList<>();
     private static ArrayList<LatLng> yellow = new ArrayList<>();
@@ -31,14 +29,13 @@ public class trackingSportActivity extends AppCompatActivity {
     private static LatLng firstcorner, secondcorner, Origo, MaxCordinates, position;
 
     static int  maxDpY, maxDpX;
-    static double SizeRatioY, SizeRatioX;
+    static double WidthRatio, LenghtRatio, MaxCordinateY, MaxCordinateX, OrigoY, OrigoX, FieldLenght, FieldWidth ;
     static int internalID;
 
-    static boolean firstclick = false;
-    static boolean secondclick = false;
-    static int toprightclick = 0;
 
-    private static Context mContext;
+    static boolean Origoclick = false;
+    static boolean MaxCordinateclick = false;
+    static int toprightclick = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,18 +53,15 @@ public class trackingSportActivity extends AppCompatActivity {
         yellowtop = findViewById(R.id.YellowShirt);
         greentop = findViewById(R.id.GreenShirt);
 
-        mContext = this;
-
         topleftcorner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 topleftcorner.setVisibility(View.GONE);
                 toprightcorner.setVisibility(View.GONE);
                 lowleftcorner.setVisibility(View.GONE);
-                if (!firstclick){
-                    firstclick = true;
-                } else {
-                    secondclick = true;
+                // you clicked top left corner first, Origo is then on the first click.
+                if (Origoclick == false && MaxCordinateclick == false){
+                    Origoclick = true;
                 }
                 GetOwnLocation();
             }
@@ -97,7 +91,7 @@ public class trackingSportActivity extends AppCompatActivity {
                 lowrightcorner.setVisibility(View.GONE);
                 // Check whether this button was clicked secondly or first
                 if (toprightclick == 0){
-                    toprightclick = 3;
+                    toprightclick = 2;
                 }
                 GetOwnLocation();
             }
@@ -109,8 +103,9 @@ public class trackingSportActivity extends AppCompatActivity {
                 toprightcorner.setVisibility(View.GONE);
                 lowleftcorner.setVisibility(View.GONE);
                 lowrightcorner.setVisibility(View.GONE);
-                if (!firstclick){
-                    firstclick = true;
+                // you clicked low right corner first, Origo is then on the second click.
+                if (MaxCordinateclick == false && Origoclick == false){
+                    MaxCordinateclick = true;
                 }
                 GetOwnLocation();
             }
@@ -145,20 +140,17 @@ public class trackingSportActivity extends AppCompatActivity {
 
         System.out.println("maksY: "+ maxDpY + " maksX: " + maxDpX);
 
-        if (firstclick){
+        if (Origoclick){
             Origo = firstcorner;
             MaxCordinates = secondcorner;
             System.out.println("Origo: "+ Origo + " MaxCordinates: " +MaxCordinates);
-            bluetop.setVisibility(View.VISIBLE);
-            bluetop.setX(0);
-            bluetop.setY(0);
-        } else if (secondclick){
+        } else if (MaxCordinateclick){
             Origo = secondcorner;
             MaxCordinates = firstcorner;
             System.out.println("Origo: "+ Origo + " MaxCordinates: " +MaxCordinates);
         } else {
             if (toprightclick == 2){
-                Origo =  new LatLng(firstcorner.latitude,secondcorner.longitude);
+                Origo =  new LatLng(secondcorner.longitude, firstcorner.latitude);
                 MaxCordinates =  new LatLng(firstcorner.longitude,secondcorner.latitude);
                 System.out.println("Origo: "+ Origo + " MaxCordinates: " +MaxCordinates);
             }else {
@@ -167,61 +159,52 @@ public class trackingSportActivity extends AppCompatActivity {
                 System.out.println("Origo: "+ Origo + " MaxCordinates: " +MaxCordinates);
             }
         }
+
+        MaxCordinateY = MaxCordinates.latitude;
+        MaxCordinateX = MaxCordinates.longitude;
+        OrigoY = Origo.latitude;
+        OrigoX = Origo.longitude;
+        LatLng calLenght = new LatLng(OrigoX, MaxCordinateY);
+        LatLng calWidth = new LatLng(MaxCordinateX, OrigoY);
+
+        //calculate field dimensions
+        FieldLenght = SphericalUtil.computeDistanceBetween(Origo, calLenght);
+        FieldWidth = SphericalUtil.computeDistanceBetween(Origo, calWidth);
+
+
+
     }
 
 
-    // To Calculate the players position on the field
+    // To Calculate the players position on the field and place the position
     public static void SetPlayers(LatLng position){
 
-       double MaxCordinateY = MaxCordinates.latitude;
-       double MaxCordinateX = MaxCordinates.longitude;
-       double OrigoY = Origo.latitude;
-       double OrigoX = Origo.longitude;
-       double X_Cordinate = position.longitude;
-       double Y_Cordinate = position.latitude;
+        LatLng X_Cordinate =  new LatLng(position.longitude, OrigoY);
+        LatLng Y_Cordinate = new LatLng(OrigoX, position.latitude);
 
+        double playerDistanceX = SphericalUtil.computeDistanceBetween(Origo, X_Cordinate);
+        double playerDistanceY = SphericalUtil.computeDistanceBetween(Origo, Y_Cordinate);
 
-       // Check if the coordinates is negative, then multiply with -1
-        if (MaxCordinateX < 0){
-            MaxCordinateX *= -1;
-        }if (MaxCordinateY < 0) {
-            MaxCordinateY *= -1;
-        }if (OrigoX < 0) {
-            OrigoX *=-1;
-        }if (OrigoY < 0) {
-            OrigoY *= -1;
-        }if (X_Cordinate < 0) {
-            X_Cordinate *= -1;
-        }if (Y_Cordinate < 0) {
-            Y_Cordinate *= -1;
+        WidthRatio = FieldLenght/playerDistanceX;
+        LenghtRatio = FieldWidth/playerDistanceY;
+
+        float playerposX = (float) WidthRatio * maxDpX;
+        float playerposY = (float) LenghtRatio * maxDpY;
+
+        if (internalID == 1){
+            redtop.setX(playerposX);
+            redtop.setY(playerposY);
+        }else if (internalID == 2) {
+            yellowtop.setX(playerposX);
+            yellowtop.setY(playerposY);
+        }else if (internalID == 3) {
+            greentop.setX(playerposX);
+            greentop.setY(playerposY);
+        }else if (internalID == 4) {
+            bluetop.setX(playerposX);
+            bluetop.setY(playerposY);
         }
 
-       SizeRatioY = maxDpY/MaxCordinateY;
-       SizeRatioX = maxDpX/MaxCordinateX;
-
-       //Check if the given position is on the field
-       if (X_Cordinate > OrigoX && X_Cordinate < MaxCordinateX && Y_Cordinate > OrigoY && Y_Cordinate < MaxCordinateY){
-
-           //Calculate the lat/lng to dp
-           float xPosition = (float) ((float) X_Cordinate * SizeRatioX);
-           float yPosition = (float) ((float) Y_Cordinate * SizeRatioY);
-
-           //check which shirt to move to the given position
-           if (internalID == 1){
-               redtop.setX(xPosition);
-               redtop.setY(yPosition);
-
-           }else if (internalID == 2){
-               yellowtop.setX(xPosition);
-               yellowtop.setY(yPosition);
-           }else if (internalID == 3){
-               greentop.setX(xPosition);
-               greentop.setY(yPosition);
-           }else {
-               bluetop.setX(xPosition);
-               bluetop.setY(yPosition);
-           }
-       }
     }
 
     public static void addPosition(String lat, String lon, String ID){
@@ -264,11 +247,5 @@ public class trackingSportActivity extends AppCompatActivity {
             internalID = macID.indexOf(foreignID)+1;
         }
         return internalID;
-    }
-
-    public static void stop(){
-        Intent newIntent = new Intent(mContext,HomeActivity.class);
-        mContext.startActivity(newIntent);
-        ((Activity) mContext).finish();
     }
 }
