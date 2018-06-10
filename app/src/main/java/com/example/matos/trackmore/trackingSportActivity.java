@@ -1,7 +1,9 @@
 package com.example.matos.trackmore;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +18,7 @@ import com.google.maps.android.SphericalUtil;
 
 import java.util.ArrayList;
 
-public class TrackingSportActivity extends AppCompatActivity {
+public class trackingSportActivity extends AppCompatActivity {
 
     private static ArrayList<LatLng> red = new ArrayList<>();
     private static ArrayList<LatLng> yellow = new ArrayList<>();
@@ -31,6 +33,7 @@ public class TrackingSportActivity extends AppCompatActivity {
     static int  maxDpY, maxDpX;
     static double WidthRatio, LenghtRatio, MaxCordinateY, MaxCordinateX, OrigoY, OrigoX, FieldLenght, FieldWidth ;
     static int internalID;
+    static Context mContext;
 
 
     static boolean Origoclick = false;
@@ -41,7 +44,7 @@ public class TrackingSportActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tracking_sport);
-
+        mContext = this;
         topleftcorner = findViewById(R.id.topleftcorner);
         lowleftcorner = findViewById(R.id.lowleftcorner);
         toprightcorner = findViewById(R.id.toprightcorner);
@@ -172,9 +175,8 @@ public class TrackingSportActivity extends AppCompatActivity {
         FieldWidth = SphericalUtil.computeDistanceBetween(Origo, calWidth);
 
 
-
+        new asyncTCP().execute(Integer.valueOf('3'));
     }
-//asd
 
     // To Calculate the players position on the field and place the position
     public static void SetPlayers(LatLng position){
@@ -247,5 +249,11 @@ public class TrackingSportActivity extends AppCompatActivity {
             internalID = macID.indexOf(foreignID)+1;
         }
         return internalID;
+    }
+
+    public static void stop(){
+        Intent newIntent = new Intent(mContext,HomeActivity.class);
+        mContext.startActivity(newIntent);
+        ((Activity) mContext).finish();
     }
 }

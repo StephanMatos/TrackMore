@@ -59,7 +59,7 @@ public class asyncTCP extends AsyncTask<Integer,Void,Integer>{
     protected void onPostExecute(Integer integer) {
 
             if(integer == 1){
-
+                new asyncGETLoRa().execute("function1");
             }else{
                 new asyncRead().execute();
             }

@@ -9,6 +9,7 @@ public class asyncJSON extends AsyncTask<String, String, String[]> {
     @Override
     protected String[] doInBackground(String... strings) {
         int SYSTEM = 0;
+        int seconds;
         String ID = "";
         String lat = "";
         String lon = "";
@@ -25,10 +26,16 @@ public class asyncJSON extends AsyncTask<String, String, String[]> {
             RSSI = json.getInt("RSSI");
             System.out.println(RSSI);
 
-            }
+        }
+        else if(SYSTEM == 3){
+            seconds = json.getInt("SECONDS");
+            System.out.println(seconds);
+        }
 
         }catch(JSONException | NullPointerException e){
-                e.printStackTrace(); }
+                e.printStackTrace();
+
+        }
 
             return new String[]{lat,lon,ID,Integer.toString(SYSTEM)};
         }

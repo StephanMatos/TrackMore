@@ -44,6 +44,7 @@ public class trackingIndividualActivity extends FragmentActivity implements OnMa
     float zoom;
 
 
+
     @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +70,7 @@ public class trackingIndividualActivity extends FragmentActivity implements OnMa
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-
+        mMap.setMyLocationEnabled(true);
 
         h.postDelayed(new Runnable(){
             @SuppressLint("MissingPermission")
@@ -84,14 +85,9 @@ public class trackingIndividualActivity extends FragmentActivity implements OnMa
             }
         }, delay);
 
-
-        // Location of device, zoom to location of device
-        mMap.setMyLocationEnabled(true);
-        lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        CurrentPosition = latLng;
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+
+
     }
 
     public static void makeMarker(String ID,String lat, String lon){
