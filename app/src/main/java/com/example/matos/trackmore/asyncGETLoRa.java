@@ -20,7 +20,7 @@ public class asyncGETLoRa extends AsyncTask<String,Void,String[]>{
         System.out.println("begin");
 
             try {
-                Thread.sleep(60000);
+                Thread.sleep(30000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -31,7 +31,8 @@ public class asyncGETLoRa extends AsyncTask<String,Void,String[]>{
         String lon = "";
         String coded;
         String decoded;
-
+        String metadata = "";
+        String time = "";
 
         try {
             // This block reads data from the specified URL
@@ -40,6 +41,7 @@ public class asyncGETLoRa extends AsyncTask<String,Void,String[]>{
             InputStream inputStream = httpURLConnection.getInputStream();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             String line = "";
+
             while(line != null){
                 line = bufferedReader.readLine();
                 data = data + line;
@@ -49,6 +51,12 @@ public class asyncGETLoRa extends AsyncTask<String,Void,String[]>{
             JSONObject json;
             json = new JSONObject(data);
             coded = json.getString("payload_raw");
+            metadata = json.getString("metadata");
+            JSONObject json2;
+            json2 = new JSONObject(metadata);
+            time = json2.getString("time");
+            System.out.println(time.substring(11, 16));
+            time = time.substring(11,16);
 
             // Decodes raw payload
             byte[] valueDecoded;
@@ -69,7 +77,7 @@ public class asyncGETLoRa extends AsyncTask<String,Void,String[]>{
 
 
 
-        String[] finalstrings = {strings[0],ID,lat,lon};
+        String[] finalstrings = {strings[0],ID,lat,lon,time};
         return finalstrings;
     }
 
@@ -78,7 +86,7 @@ public class asyncGETLoRa extends AsyncTask<String,Void,String[]>{
         System.out.println(s[0] + "   " + s[1] + "    " + s[2] + "     "  + s[3]);
         if(s[0].equals("function1")){
             System.out.println("in 1");
-            trackingIndividualActivity.makeMarker(s[1],s[2],s[3]);
+            trackingIndividualActivity.makeMarker(s[1],s[2],s[3],s[4]);
         }else if (s[0].equals("function1")){
             System.out.println("in 2 ");
             trackingGroupActivity.makeMarker(s[2],s[3],s[1],true);

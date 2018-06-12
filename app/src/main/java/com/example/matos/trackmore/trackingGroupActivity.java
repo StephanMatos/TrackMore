@@ -147,7 +147,7 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
             if(!LoRa){
                 count(internalID, LoRa);
             } else{
-                Toast.makeText(mContext, internalID + "is currently not connected to WiFi", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, internalID + "is currently not connected to WiFi", Toast.LENGTH_LONG).show();
             }
 
 

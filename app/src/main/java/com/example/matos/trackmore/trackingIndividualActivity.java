@@ -16,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -36,12 +37,15 @@ public class trackingIndividualActivity extends FragmentActivity implements OnMa
     private static double RedCurrent = 0.0, RedPrev = 0.0;
     private static TextView RedcurrentDistance, RedpreviousDistance, RedMarker;
     private static Context mContext;
+    private Context context;
+    static String time = "no update yet";
     LocationManager lm;
     Location location;
     LatLng latLng;
     Handler h = new Handler();
     int delay = 30000;
     float zoom;
+
 
 
 
@@ -55,7 +59,7 @@ public class trackingIndividualActivity extends FragmentActivity implements OnMa
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         mContext = this;
-
+        context = this;
         //new asyncTCP().execute(Integer.valueOf('1'));
         new asyncGETLoRa().execute("function1");
     }
@@ -64,13 +68,11 @@ public class trackingIndividualActivity extends FragmentActivity implements OnMa
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        zoom = 11;
 
         // Android needs to peform this check, otherwise location will not be shown
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        mMap.setMyLocationEnabled(true);
 
         h.postDelayed(new Runnable(){
             @SuppressLint("MissingPermission")
@@ -81,16 +83,28 @@ public class trackingIndividualActivity extends FragmentActivity implements OnMa
                 location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 latLng = new LatLng(location.getLatitude(), location.getLongitude());
                 CurrentPosition = latLng;
+                Toast.makeText(context, "Last update from device was at : " + time, Toast.LENGTH_LONG).show();
                 System.out.println("redraw");
             }
         }, delay);
 
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        // Location of device, zoom to location of device
+        try{
+            mMap.setMyLocationEnabled(true);
+            lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            CurrentPosition = latLng;
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        } catch (NullPointerException e){
+            e.printStackTrace();
+        }
 
 
     }
 
-    public static void makeMarker(String ID,String lat, String lon){
+    public static void makeMarker(String ID,String lat, String lon,String T){
+        time = T;
 
         double latitude = Double.parseDouble(lat);
         double longitude = Double.parseDouble(lon);
