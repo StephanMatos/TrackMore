@@ -49,6 +49,7 @@ public class trackingIndividualActivity extends FragmentActivity implements OnMa
     // retry
     static boolean values = false;
     static String latitude, longitude , ID;
+    static boolean stop = false;
 
 
 
@@ -86,6 +87,11 @@ public class trackingIndividualActivity extends FragmentActivity implements OnMa
                 if(values){
                     makeMarker();
                     values = false;
+                }
+                if(stop){
+                    delay = 2000000000;
+                    finish();
+
                 }
 
                 lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
@@ -178,9 +184,7 @@ public class trackingIndividualActivity extends FragmentActivity implements OnMa
     }
 
     public static void stop(){
-        Intent newIntent = new Intent(mContext,HomeActivity.class);
-        mContext.startActivity(newIntent);
-        ((Activity) mContext).finish();
+        stop = true;
     }
     @Override
     public void onBackPressed(){

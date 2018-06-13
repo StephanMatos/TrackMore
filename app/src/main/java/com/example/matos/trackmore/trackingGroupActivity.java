@@ -60,14 +60,16 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
     // Timeout for LoRa
     public static int countRED,countYellow,countBLUE,countGreen;
     public static boolean RED,GREEN,YELLOW,BLUE;
-    private static Context mContext;
+
 
     // handler
+    private static Context mContext;
     private Context context;
     Handler h = new Handler();
     int delay = 5000;
     static boolean distanceToGreat = false;
     static boolean fromLoRa = false;
+    static boolean stop = false;
 
 
     @SuppressLint("WrongViewCast")
@@ -133,6 +135,11 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
                             .setMessage("Data modtaget fra LoRa")
                             .setPositiveButton("OK", null).create().show();
                     distanceToGreat = false;
+                }
+                if(stop){
+                    delay = 2000000000;
+                    finish();
+
                 }
 
                 System.out.println("redraw");
@@ -270,16 +277,14 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
         }
 
         if(countRED > 5 && RED || countYellow > 5 && YELLOW || countGreen > 10 && GREEN || countBLUE > 10 && BLUE){
-            new asyncGETLoRa().execute("function2","not first run");
+            new asyncGETLoRa().execute("function2");
 
         }
 
     }
 
     public static void stop(){
-        Intent newIntent = new Intent(mContext,HomeActivity.class);
-        mContext.startActivity(newIntent);
-        ((Activity) mContext).finish();
+       stop = true;
     }
 
     public  static void markerClick(Marker marker){

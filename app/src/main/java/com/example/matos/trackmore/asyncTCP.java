@@ -18,7 +18,7 @@ public class asyncTCP extends AsyncTask<Integer,Void,Integer>{
                     }catch (InterruptedException e){
                         e.printStackTrace();
                     }
-                    if(retry > 3){
+                    if(retry > 2){
                         if(integers[0] == '1'){
                           trackingIndividualActivity.stop();
                         } else if(integers[0] == '2'){
