@@ -63,8 +63,11 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
     private static Context mContext;
 
     // handler
+    private Context context;
     Handler h = new Handler();
     int delay = 5000;
+    static boolean distanceToGreat = false;
+    static boolean fromLoRa = false;
 
 
     @SuppressLint("WrongViewCast")
@@ -78,6 +81,7 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
         mapFragment.getMapAsync(this);
 
         mContext = this;
+        context = this;
         new asyncTCP().execute(Integer.valueOf('2'));
     }
 
@@ -115,6 +119,22 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
                 location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 latLng = new LatLng(location.getLatitude(), location.getLongitude());
                 CurrentPosition = latLng;
+
+                if(distanceToGreat){
+                    new AlertDialog.Builder(context)
+                            .setTitle("Distance")
+                            .setMessage("En device er nu mere end 50 meter fra din position")
+                            .setPositiveButton("OK", null).create().show();
+                    distanceToGreat = false;
+                }
+                if(fromLoRa){
+                    new AlertDialog.Builder(context)
+                            .setTitle("LoRa")
+                            .setMessage("Data modtaget fra LoRa")
+                            .setPositiveButton("OK", null).create().show();
+                    distanceToGreat = false;
+                }
+
                 System.out.println("redraw");
             }
         }, delay);
@@ -132,6 +152,7 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
         }
     }
 
+
     public static void makeMarker(String lat, String lon, String ID, boolean LoRa){
 
         double latitude = Double.parseDouble(lat);
@@ -139,15 +160,21 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
         markerPosition = new LatLng(latitude,longitude);
 
         double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, markerPosition);
+
+
         if(distance > 1000){
             new asyncRead().execute();
             return;
         }
+        if(distance > 50){
+            distanceToGreat = true;
+        }
+
             internalID = translateID(ID);
             if(!LoRa){
                 count(internalID, LoRa);
             } else{
-                Toast.makeText(mContext, internalID + "is currently not connected to WiFi", Toast.LENGTH_LONG).show();
+                fromLoRa = true;
             }
 
 
@@ -242,7 +269,7 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
             countBLUE = 0;
         }
 
-        if(countRED > 10 && RED || countYellow > 10 && YELLOW || countGreen > 10 && GREEN || countBLUE > 10 && BLUE){
+        if(countRED > 5 && RED || countYellow > 5 && YELLOW || countGreen > 10 && GREEN || countBLUE > 10 && BLUE){
             new asyncGETLoRa().execute("function2","not first run");
 
         }

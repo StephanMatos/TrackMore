@@ -43,8 +43,12 @@ public class trackingIndividualActivity extends FragmentActivity implements OnMa
     Location location;
     LatLng latLng;
     Handler h = new Handler();
-    int delay = 30000;
+    int delay = 20000;
     float zoom;
+
+    // retry
+    static boolean values = false;
+    static String latitude, longitude , ID;
 
 
 
@@ -77,8 +81,13 @@ public class trackingIndividualActivity extends FragmentActivity implements OnMa
         h.postDelayed(new Runnable(){
             @SuppressLint("MissingPermission")
             public void run(){
-
                 h.postDelayed(this, delay);
+
+                if(values){
+                    makeMarker();
+                    values = false;
+                }
+
                 lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
                 location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 latLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -103,12 +112,20 @@ public class trackingIndividualActivity extends FragmentActivity implements OnMa
 
     }
 
-    public static void makeMarker(String ID,String lat, String lon,String T){
+    public static void update(String id,String lat, String lon,String T){
+        ID = id;
+        latitude = lat;
+        longitude = lon;
         time = T;
+        values = true;
+    }
 
-        double latitude = Double.parseDouble(lat);
-        double longitude = Double.parseDouble(lon);
-        markerPosition = new LatLng(latitude,longitude);
+    public void makeMarker(){
+
+
+        double lat = Double.parseDouble(latitude);
+        double lon = Double.parseDouble(longitude);
+        markerPosition = new LatLng(lat,lon);
 
         double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, markerPosition);
 
@@ -126,7 +143,7 @@ public class trackingIndividualActivity extends FragmentActivity implements OnMa
 
     }
 
-    public  static void markerClick(Marker marker){
+    public void markerClick(Marker marker){
 
         marker.setTag(markerPosition);
 
@@ -136,7 +153,7 @@ public class trackingIndividualActivity extends FragmentActivity implements OnMa
             public boolean onMarkerClick(Marker marker) {
 
                 // Create custom dialog object
-                final Dialog dialog = new Dialog(mContext);
+                final Dialog dialog = new Dialog(context);
                 // Include dialog.xml file
                 dialog.setContentView(R.layout.dialog_group_individuel);
 

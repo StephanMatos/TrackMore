@@ -34,6 +34,7 @@ public class asyncGETLoRa extends AsyncTask<String,Void,String[]>{
         String metadata = "";
         String time = "";
 
+
         try {
             // This block reads data from the specified URL
             URL url = new URL("https://api.myjson.com/bins/z99wm");
@@ -56,7 +57,7 @@ public class asyncGETLoRa extends AsyncTask<String,Void,String[]>{
             json2 = new JSONObject(metadata);
             time = json2.getString("time");
             System.out.println(time.substring(11, 16));
-            time = time.substring(11,16);
+            time = time.substring(11,16) + " d. " +time.substring(8,10)+ "-" + time.substring(5,7);
 
             // Decodes raw payload
             byte[] valueDecoded;
@@ -86,7 +87,8 @@ public class asyncGETLoRa extends AsyncTask<String,Void,String[]>{
         System.out.println(s[0] + "   " + s[1] + "    " + s[2] + "     "  + s[3]);
         if(s[0].equals("function1")){
             System.out.println("in 1");
-            trackingIndividualActivity.makeMarker(s[1],s[2],s[3],s[4]);
+
+            trackingIndividualActivity.update(s[1],s[2],s[3],s[4]);
         }else if (s[0].equals("function1")){
             System.out.println("in 2 ");
             trackingGroupActivity.makeMarker(s[2],s[3],s[1],true);
