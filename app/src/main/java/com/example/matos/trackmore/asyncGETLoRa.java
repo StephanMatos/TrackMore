@@ -89,7 +89,7 @@ public class asyncGETLoRa extends AsyncTask<String,Void,String[]>{
             System.out.println("in 1");
 
             trackingIndividualActivity.update(s[1],s[2],s[3],s[4]);
-        }else if (s[0].equals("function1")){
+        }else if (s[0].equals("function2")){
             System.out.println("in 2 ");
             trackingGroupActivity.makeMarker(s[2],s[3],s[1],true);
 

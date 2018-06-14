@@ -1,13 +1,10 @@
 package com.example.matos.trackmore;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -16,8 +13,6 @@ import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -28,7 +23,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
-
 import java.util.ArrayList;
 
 public class trackingGroupActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -124,15 +118,15 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
 
                 if(distanceToGreat){
                     new AlertDialog.Builder(context)
-                            .setTitle("Distance")
-                            .setMessage("En device er nu mere end 50 meter fra din position")
+                            .setTitle("WARNING")
+                            .setMessage("Device exceeds 50 meter distance")
                             .setPositiveButton("OK", null).create().show();
                     distanceToGreat = false;
                 }
                 if(fromLoRa){
                     new AlertDialog.Builder(context)
                             .setTitle("LoRa")
-                            .setMessage("Data modtaget fra LoRa")
+                            .setMessage("Data received using LoRa")
                             .setPositiveButton("OK", null).create().show();
                     distanceToGreat = false;
                 }
@@ -173,7 +167,7 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
             new asyncRead().execute();
             return;
         }
-        if(distance > 50){
+        if(distance > 50 && distance < 1000){
             distanceToGreat = true;
         }
 

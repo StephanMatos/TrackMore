@@ -24,7 +24,7 @@ public class asyncTCP extends AsyncTask<Integer,Void,Integer>{
                         } else if(integers[0] == '2'){
                           trackingGroupActivity.stop();
                         } else if (integers[0] == '3'){
-                            trackingSportActivity.stop();
+                            
                         }
                         break;
                     }
@@ -42,7 +42,7 @@ public class asyncTCP extends AsyncTask<Integer,Void,Integer>{
                 } else if(integers[0] == '2'){
                     pw.println("{\"SYSTEM\":2}");
                 } else if (integers[0] == '3'){
-                    pw.println("{\"SYSTEM\":3");
+                    pw.println("{\"SYSTEM\":3}");
                 }
 
                 pw.flush();
