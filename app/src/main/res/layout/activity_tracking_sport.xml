@@ -50,15 +50,6 @@
         android:background="@android:color/transparent"
         app:srcCompat="@drawable/lowrightcorner" />
 
-    <ImageButton
-        android:id="@+id/toprightcorner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:background="@android:color/transparent"
-        app:srcCompat="@drawable/toprightcorner" />
-
     <ImageView
         android:id="@+id/GreenShirt"
         android:layout_width="35dp"

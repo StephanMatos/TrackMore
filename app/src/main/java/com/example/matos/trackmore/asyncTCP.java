@@ -24,7 +24,7 @@ public class asyncTCP extends AsyncTask<Integer,Void,Integer>{
                         } else if(integers[0] == '2'){
                           trackingGroupActivity.stop();
                         } else if (integers[0] == '3'){
-                            
+                            trackingGroupActivity.stop();
                         }
                         break;
                     }

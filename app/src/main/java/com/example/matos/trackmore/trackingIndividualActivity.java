@@ -44,14 +44,12 @@ public class trackingIndividualActivity extends FragmentActivity implements OnMa
     LatLng latLng;
     Handler h = new Handler();
     int delay = 20000;
-    float zoom;
+    float zoom = 10;
 
     // retry
     static boolean values = false;
     static String latitude, longitude , ID;
     static boolean stop = false;
-
-
 
 
     @SuppressLint("WrongViewCast")
@@ -91,15 +89,14 @@ public class trackingIndividualActivity extends FragmentActivity implements OnMa
                 if(stop){
                     delay = 2000000000;
                     finish();
-
                 }
-
                 lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
                 location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 latLng = new LatLng(location.getLatitude(), location.getLongitude());
                 CurrentPosition = latLng;
                 Toast.makeText(context, "Last update from device was at : " + time, Toast.LENGTH_LONG).show();
                 System.out.println("redraw");
+
             }
         }, delay);
 

@@ -57,7 +57,7 @@ public class asyncGETLoRa extends AsyncTask<String,Void,String[]>{
             json2 = new JSONObject(metadata);
             time = json2.getString("time");
             System.out.println(time.substring(11, 16));
-            time = time.substring(11,16) + " d. " +time.substring(8,10)+ "-" + time.substring(5,7);
+            time = time.substring(11,16);
 
             // Decodes raw payload
             byte[] valueDecoded;

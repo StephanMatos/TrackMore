@@ -22,7 +22,7 @@ public class Network extends Application {
 
     public Network(){
 
-        sock = new Socket();
+
     }
 
     public static Network getInstance() {
@@ -38,8 +38,7 @@ public class Network extends Application {
         try {
             sock = new Socket(ip, 8888);
             inputStream = sock.getInputStream();
-            inputStreamReader = new InputStreamReader(inputStream);
-            bir = new BufferedReader(inputStreamReader);
+            bir = new BufferedReader(new InputStreamReader(inputStream));
             pw = new PrintWriter(sock.getOutputStream());
 
         }catch (IOException e){
