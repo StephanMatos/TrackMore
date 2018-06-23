@@ -28,18 +28,21 @@ public class trackingSportActivity extends AppCompatActivity {
 
     private ImageButton topleftcorner, lowleftcorner, lowrightcorner;
     private static ImageView bluetop,redtop, yellowtop, greentop, dropdownmenu;
-    private static LatLng firstcorner, secondcorner, Origo, MaxCordinates, position;
+    private static LatLng firstcorner, secondcorner, position;
     private static LatLng topLeft, lowLeft, lowRight;
 
     static int  maxDpY, maxDpX;
     static double WidthRatio, LenghtRatio, MaxCordinateY, MaxCordinateX, OrigoY, OrigoX, FieldLenght, FieldWidth ;
     static int internalID;
     static Context mContext;
+    static vector vectorA = new vector(55.791229,12.521473);
+    static vector vectorB = new vector(55.790426, 12.521023);
 
 
-    LatLng corner1 = new LatLng(55.791229,12.521476);
-    LatLng corner2 = new LatLng(55.790425,12.521030);
-    LatLng corner3 = new LatLng(55.790269,12.521936);
+
+    LatLng corner1 = new LatLng(55.7912302,12.52147017);
+    LatLng corner2 = new LatLng(55.79042045,12.52102478);
+    LatLng corner3 = new LatLng(55.79026187,12.52191608);
 
 
     static boolean Origoclick = false;
@@ -71,6 +74,8 @@ public class trackingSportActivity extends AppCompatActivity {
                     Origoclick = true;
                 }
                 topLeft = corner1;
+
+
             }
         });
 
@@ -140,31 +145,38 @@ public class trackingSportActivity extends AppCompatActivity {
         FieldWidth = SphericalUtil.computeDistanceBetween(lowLeft,lowRight);
         System.out.println("legth is : " + FieldLenght + "width is : " + FieldWidth);
 
-        addPosition("55.791116","12.521758", "AE12C212");
+
+
+
+        addPosition("55.79073614","12.52171057", "AE12C212");
         //new asyncTCP().execute(Integer.valueOf('3'));
     }
+
+
 
     // To Calculate the players position on the field and place the position
     public static void SetPlayers(LatLng position){
 
-        LatLng X_Cordinate =  new LatLng(position.latitude, topLeft.longitude);
-        LatLng Y_Cordinate = new LatLng(topLeft.latitude, position.longitude);
-        System.out.println("X cordinate is : " + X_Cordinate + " Y Cordinate is : " + Y_Cordinate);
+        double C = SphericalUtil.computeDistanceBetween(topLeft,position);
+        vectorB.sub(vectorA);
+        vector vectorC = new vector(position.latitude,position.longitude);
+        vectorC.sub(vectorA);
 
-        double playerDistanceX = SphericalUtil.computeDistanceBetween(topLeft, X_Cordinate);
-        double playerDistanceY = SphericalUtil.computeDistanceBetween(topLeft, Y_Cordinate);
+        double angle = vectorB.angle(vectorC);
+        System.out.println("angle is : " + angle);
 
-        System.out.println("PlayerDistance X is : " + playerDistanceX + "PlayDistanceY is : " + playerDistanceY);
+        double sidea = Math.sin(angle)*C;
+        double sideb = Math.cos(angle)*C;
 
-        WidthRatio = playerDistanceX/FieldWidth;
-        LenghtRatio = playerDistanceY/FieldLenght;
+        System.out.println("Side a is :  " + sidea + " side b is : " + sideb);
 
-        System.out.println("witdthRatios is : " + WidthRatio + "Length ratio is : " + LenghtRatio);
+        System.out.println("   RatioW   " + sidea/FieldWidth + "  RatioL   " + sideb/FieldLenght);
 
-        float playerposX = (float) WidthRatio * maxDpX;
-        float playerposY = (float) LenghtRatio * maxDpY;
+        float playerposX = (float)(sidea/FieldWidth)*maxDpX;
+        float playerposY = (float) (sideb/FieldLenght)*maxDpY;
 
-        System.out.println("playerposX is : "+playerposX +" playerposY is : " + playerposY);
+        System.out.println("player x is : " + playerposX + "playerposY : " + playerposY);
+
 
         if (internalID == 1){
             System.out.println("in setplayers");
