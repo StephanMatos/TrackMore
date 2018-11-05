@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class trackingGroupActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -52,6 +53,9 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
     LocationManager lm;
     Location location;
     LatLng latLng;
+
+    // HashMap
+    HashMap<String, Marker> MarkerMap = new HashMap<String, Marker>();
 
     // Device ID
     private static ArrayList<String> macID = new ArrayList<>();
@@ -186,8 +190,8 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
 
         for(int i = 0; i < ID.size(); i++){
             String txt = ID.get(i);
-            Marker newMarker;
-
+           // Marker newMarker = new Marker();
+           // MarkerMap.put(txt,newMarker);
 
         }
 
