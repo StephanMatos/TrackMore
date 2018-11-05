@@ -52,11 +52,10 @@ public class HomeActivity extends AppCompatActivity{
             public void onClick(View view) {
 
                 if (mCurrentPage == 0) {
-
-                        GroupActivity();
-
+                    GroupActivity();
+                } else {
+                    SetupActivity();
                 }
-
             }
         });
 
@@ -79,15 +78,15 @@ public class HomeActivity extends AppCompatActivity{
 
     }
 
-
-
-
-
     public void GroupActivity() {
         Intent intent =  new Intent(this, trackingGroupActivity.class);
         startActivity(intent);
     }
 
+    public void SetupActivity() {
+        Intent intent = new Intent(this, setup_list.class);
+        startActivity(intent);
+    }
 
     public void addDotsIndicator(int position) {
         mdots = new TextView[2];
