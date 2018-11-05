@@ -52,15 +52,9 @@ public class HomeActivity extends AppCompatActivity{
             public void onClick(View view) {
 
                 if (mCurrentPage == 0) {
-                    try {
-                        IndividualActivity();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else if (mCurrentPage == 1) {
-                    GroupActivity();
-                } else {
-                     SportActivity();
+
+                        GroupActivity();
+
                 }
 
             }
@@ -87,20 +81,13 @@ public class HomeActivity extends AppCompatActivity{
 
 
 
-    public void IndividualActivity() throws InterruptedException {
-        Intent intent =  new Intent(this, trackingIndividualActivity.class);
-        startActivity(intent);
-    }
+
 
     public void GroupActivity() {
         Intent intent =  new Intent(this, trackingGroupActivity.class);
         startActivity(intent);
     }
 
-    public void SportActivity() {
-        Intent intent =  new Intent(this, trackingSportActivity.class);
-        startActivity(intent);
-    }
 
     public void addDotsIndicator(int position) {
         mdots = new TextView[3];

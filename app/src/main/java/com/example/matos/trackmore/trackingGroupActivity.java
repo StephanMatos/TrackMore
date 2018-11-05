@@ -76,7 +76,6 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tracking_individual);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -84,7 +83,6 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
 
         mContext = this;
         context = this;
-        new asyncTCP().execute(Integer.valueOf('2'));
     }
 
     @Override
@@ -168,28 +166,10 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
 
         double distance = SphericalUtil.computeDistanceBetween(CurrentPosition, markerPosition);
 
-
-        if(distance > 1000){
-            new asyncRead().execute();
-            return;
-        }
-        if(distance > 75 && distance < 1000){
-            distanceToGreat = true;
-        }
-
-            internalID = translateID(ID);
-            if(!LoRa){
-                count(internalID, LoRa);
-            } else{
-                fromLoRa = true;
-            }
-
-
-            if (internalID == 1) {
                 RED = true;
-                if(RedMarkerC != null){
-                    RedMarkerC.remove();
-                }
+
+                RedMarkerC.remove();
+
                 RedMarkerC = mMap.addMarker(new MarkerOptions().position(markerPosition).title(String.valueOf(internalID)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
                 markerClick(RedMarkerC);
 
@@ -197,47 +177,19 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
                 RedCurrent = distance;
 
 
-            } else if (internalID == 2) {
-                YELLOW = true;
-
-                if(YellowMarkerC != null){
-                    YellowMarkerC.remove();
-                }
-
-                YellowMarkerC = mMap.addMarker(new MarkerOptions().position(markerPosition).title(String.valueOf(internalID)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
-                markerClick(YellowMarkerC);
-
-                YellowPrev = YellowCurrent;
-                YellowCurrent = distance;
-
-            } else if (internalID == 3) {
-                GREEN = true;
-
-                if(GreenMarkerC != null){
-                    GreenMarkerC.remove();
-                }
-
-                GreenMarkerC = mMap.addMarker(new MarkerOptions().position(markerPosition).title(String.valueOf(internalID)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-                GreenPrev = GreenCurrent;
-                GreenCurrent = distance;
-                markerClick(GreenMarkerC);
 
 
 
-            } else if (internalID == 4) {
-                BLUE = true;
-                if(BlueMarkerC != null){
-                    BlueMarkerC.remove();
-                }
+    }
 
-                BlueMarkerC = mMap.addMarker(new MarkerOptions().position(markerPosition).title(String.valueOf(internalID)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-                BluePrev = BlueCurrent;
-                BlueCurrent = distance;
+    public void initMarkers(ArrayList<String> ID, ArrayList Colour){
 
-                markerClick(BlueMarkerC);
+        for(int i = 0; i < ID.size(); i++){
+            String txt = ID.get(i);
+            Marker newMarker;
 
 
-            }
+        }
 
 
     }
@@ -277,15 +229,13 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
         }
 
         if(countRED > 5 && RED || countYellow > 5 && YELLOW || countGreen > 10 && GREEN || countBLUE > 10 && BLUE){
-            new asyncGETLoRa().execute("function2");
+
 
         }
 
     }
 
-    public static void stop(){
-       stop = true;
-    }
+
 
     public  static void markerClick(Marker marker){
 
@@ -346,7 +296,7 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
                 return false;
             }
         });
-        new asyncRead().execute();
+
     }
 
 
