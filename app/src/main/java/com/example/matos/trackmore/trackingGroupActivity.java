@@ -186,16 +186,13 @@ public class trackingGroupActivity extends AppCompatActivity implements OnMapRea
 
     }
 
+    // method to init number of markers from ID array, and tie Marker with ID
     public void initMarkers(ArrayList<String> ID, ArrayList Colour){
-
         for(int i = 0; i < ID.size(); i++){
             String txt = ID.get(i);
-           // Marker newMarker = new Marker();
-           // MarkerMap.put(txt,newMarker);
-
+            Marker newMarker = mMap.addMarker(new MarkerOptions());
+            MarkerMap.put(txt,newMarker);
         }
-
-
     }
 
     private static int translateID(String foreignID){
