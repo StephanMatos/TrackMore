@@ -90,7 +90,7 @@ public class HomeActivity extends AppCompatActivity{
 
 
     public void addDotsIndicator(int position) {
-        mdots = new TextView[3];
+        mdots = new TextView[2];
         mDotLayout.removeAllViews();
 
         for (int i = 0; i < mdots.length; i++){

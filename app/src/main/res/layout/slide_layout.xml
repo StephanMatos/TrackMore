@@ -11,7 +11,7 @@
         android:layout_alignParentStart="true"
         android:layout_marginBottom="65dp"
         android:padding="100dp"
-        app:srcCompat="@drawable/trackindividual1"
+        app:srcCompat="@drawable/tracking"
         />
 
     <TextView
@@ -21,6 +21,6 @@
         android:layout_alignBottom="@+id/slide_image"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="71dp"
-        android:text="One device tracking"
+        android:text="Track"
         android:textSize="30sp" />
 </RelativeLayout>

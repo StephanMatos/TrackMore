@@ -22,16 +22,15 @@ public class SliderAdapter extends PagerAdapter {
 
     private int[] slide_images = {
 
-            R.drawable.trackindividual1,
-            R.drawable.trackgroup1,
-            R.drawable.tracksport1,
+            R.drawable.tracking,
+            R.drawable.setup,
     };
 
     private String[] slide_headings = {
 
-            "One device",
-            "Multiple devices",
-            "Sport"
+            "Tracking",
+            "Setup devices",
+
     };
 
     @Override
